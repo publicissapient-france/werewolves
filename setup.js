@@ -4,9 +4,10 @@ const gameUtils = require("./gameUtils")
 
 const redis = require("./redis")
 const client = redis.getRedisClient()
+const uuidV4 = require('uuid/v4');
 
 module.exports.createGame = () => {
-    // TODO Assign a game id
+    return uuidV4()
 };
 
 module.exports.addPlayer = (gameId, userId) => {
@@ -24,7 +25,6 @@ module.exports.addPlayer = (gameId, userId) => {
     })
 };
 // TODO
-// 8 players : 2 Wolves, 1 Clairvoyant, 1 Captain, 4 Villagers
 // 9 players : 2 Wolves, 1 Clairvoyant, 1 Cupid, 1 Hunter, 4 Villagers
 // 10 players : 2 Wolves, 1 Clairvoyant, 1 Cupid, 1 Hunter, 1 Little Girl, 4 Villagers
 // 11 players : 2 Wolves, 1 Clairvoyant, 1 Cupid, 1 Hunter, 1 Sorcerer,  5 Villagers
