@@ -1,11 +1,9 @@
 'use strict';
 
-const redis = require('redis');
-const bluebird = require('bluebird');
-bluebird.promisifyAll(redis.RedisClient.prototype);
 const gameUtils = require("./gameUtils")
 
-const client = redis.createClient({host: "redis"})
+const redis = require("./redis")
+const client = redis.getRedisClient()
 
 module.exports.createGame = () => {
     // TODO Assign a game id

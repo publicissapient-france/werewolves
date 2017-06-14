@@ -1,12 +1,9 @@
 'use strict';
 
-const redis = require('redis');
-const bluebird = require('bluebird');
 const conditions = require('./conditions');
 
-bluebird.promisifyAll(redis.RedisClient.prototype);
-
-const client =  redis.createClient({host:"redis"})
+const redis = require("./redis")
+const client = redis.getRedisClient()
 
 module.exports.killPlayer = (gameId, userId) => {
     // key : gameId-alive

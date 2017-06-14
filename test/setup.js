@@ -1,13 +1,10 @@
 const expect = require("chai").expect;
 const setup = require("../setup");
 
-const redis = require('redis');
-const bluebird = require('bluebird');
-bluebird.promisifyAll(redis.RedisClient.prototype);
-
 const gameUtils = require("../gameUtils")
 
-const client = redis.createClient({host: "redis"})
+const redis = require("../redis")
+const client = redis.getRedisClient()
 
 const gameIdTest = "test"
 
@@ -44,18 +41,18 @@ describe("Setup", () => {
     });
 
     describe("Add player", () => {
-        client.flushallAsync().then(() => {
-            it("Add non existing player", (doneIt) => {
+        client.flushall(() => {
+            it("Add non existing player", (done) => {
                 setup.addPlayer(gameIdTest, "Pabs")
-                setTimeout(checkCardinality, 100, gameUtils.getAliveKey(gameIdTest), 1, doneIt);
+                setTimeout(checkCardinality, 100, gameUtils.getAliveKey(gameIdTest), 1, done);
             });
-            it("Add another non existing player", (doneIt) => {
+            it("Add another non existing player", (done) => {
                 setup.addPlayer(gameIdTest, "Qian")
-                setTimeout(checkCardinality, 100, gameUtils.getAliveKey(gameIdTest), 2, doneIt);
+                setTimeout(checkCardinality, 100, gameUtils.getAliveKey(gameIdTest), 2, done);
             });
-            it("Add existing player", (doneIt) => {
+            it("Add existing player", (done) => {
                 setup.addPlayer(gameIdTest, "Pabs")
-                setTimeout(checkCardinality, 100, gameUtils.getAliveKey(gameIdTest), 2, doneIt);
+                setTimeout(checkCardinality, 100, gameUtils.getAliveKey(gameIdTest), 2, done);
             });
         })
 

@@ -1,10 +1,7 @@
 'use strict';
 
-const redis = require('redis');
-const bluebird = require('bluebird');
-bluebird.promisifyAll(redis.RedisClient.prototype);
-
-const client =  redis.createClient({host:"redis"})
+const redis = require("./redis")
+const client = redis.getRedisClient()
 
 
 module.exports.checkEndConditions = (gameId) => {
