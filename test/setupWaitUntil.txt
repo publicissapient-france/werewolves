@@ -1,0 +1,63 @@
+const expect = require("chai").expect;
+const setup = require("../setup");
+
+const gameUtils = require("../gameUtils")
+
+const redis = require("../redis")
+const client = redis.getRedisClient()
+
+var waitUntil = require('wait-until');
+
+
+const gameIdTest = "test"
+
+const checkCardinality = (key, card) => {
+    client.scardAsync(key).then((res) => {
+        expect(res).to.equal(card)
+    })
+}
+
+const waitForRedis
+
+describe("Setup", () => {
+    describe("Role distribution", () => {
+        it("6 players distribution", (done) => {
+            client.flushall();
+            client.sadd(gameUtils.getAliveKey(gameIdTest), "Pabs", "Qian", "Michael", "Julien", "Benjamin", "Simone");
+            waitUntil()
+                .interval(20)
+                .times(5)
+                .condition((cb) => {
+                    process.nextTick(() => {
+                        cb(client.command_queue_length == 0 ? true : false);
+                    });
+                })
+                .done((result) => {
+                    setup.distributeRoles(gameIdTest)
+                    waitUntil()
+                        .interval(20)
+                        .times(5)
+                        .condition((cb) => {
+                            process.nextTick(() => {
+                                cb(client.command_queue_length == 0 ? true : false);
+                            });
+                        })
+                        .done((result) => {
+                            checkCardinality(gameUtils.getVillagersKey(gameIdTest), 4)
+                            checkCardinality(gameUtils.getAnyRoleKey(gameIdTest, "wolves"), 2)
+                            waitUntil()
+                                .interval(20)
+                                .times(5)
+                                .condition((cb) => {
+                                    process.nextTick(() => {
+                                        cb(client.command_queue_length == 0 ? true : false);
+                                    });
+                                })
+                                .done((result) => {
+                                    done()
+                                });
+                        });
+                });
+        })
+    });
+})
