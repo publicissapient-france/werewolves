@@ -41,20 +41,28 @@ describe("Setup", () => {
     });
 
     describe("Add player", () => {
-        client.flushall(() => {
-            it("Add non existing player", (done) => {
+        it("Add non existing player", (done) => {
+            client.flushallAsync().then(() => {
                 setup.addPlayer(gameIdTest, "Pabs")
                 setTimeout(checkCardinality, 100, gameUtils.getAliveKey(gameIdTest), 1, done);
+            })
+        });
+        it("Add another non existing player", (done) => {
+            client.flushallAsync().then(() => {
+                client.saddAsync(gameUtils.getAliveKey(gameIdTest), "Pabs").then(() => {
+                    setup.addPlayer(gameIdTest, "Qian")
+                    setTimeout(checkCardinality, 100, gameUtils.getAliveKey(gameIdTest), 2, done);
+                })
+            })
+        });
+        it("Add existing player", (done) => {
+            client.flushallAsync().then(() => {
+                client.saddAsync(gameUtils.getAliveKey(gameIdTest), "Pabs", "Qian").then(() => {
+                    setup.addPlayer(gameIdTest, "Qian")
+                    setTimeout(checkCardinality, 100, gameUtils.getAliveKey(gameIdTest), 2, done);
+                })
             });
-            it("Add another non existing player", (done) => {
-                setup.addPlayer(gameIdTest, "Qian")
-                setTimeout(checkCardinality, 100, gameUtils.getAliveKey(gameIdTest), 2, done);
-            });
-            it("Add existing player", (done) => {
-                setup.addPlayer(gameIdTest, "Pabs")
-                setTimeout(checkCardinality, 100, gameUtils.getAliveKey(gameIdTest), 2, done);
-            });
-        })
+        });
 
     });
 });
