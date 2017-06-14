@@ -11,7 +11,7 @@ module.exports.createGame = () => {
 
 module.exports.addPlayer = (gameId, userId) => {
     // Check if user already exists
-    client.sismemberAsync(gameUtils.getAliveKey(gameId), userId).then((res) => {
+    return client.sismemberAsync(gameUtils.getAliveKey(gameId), userId).then((res) => {
         if (res.length > 0) {
             // TODO return error to user
             // FIREBASE event to be pushed
@@ -31,7 +31,8 @@ module.exports.addPlayer = (gameId, userId) => {
 // 12 players : 3 Wolves, 1 Clairvoyant, 1 Cupid, 1 Hunter, 1 Little Girl, 1 Thief, 4 Villagers
 const distribution = {
     6: ["wolves", "wolves", "clairvoyant", "captain", "villagers", "villagers"],
-    7: ["wolves", "wolves", "clairvoyant", "captain", "villagers", "villagers", "villagers"]
+    7: ["wolves", "wolves", "clairvoyant", "captain", "villagers", "villagers", "villagers"],
+    8: ["wolves", "wolves", "clairvoyant", "captain", "villagers", "villagers", "villagers", "villagers"]
 }
 
 
@@ -42,8 +43,8 @@ Array.prototype.randsplice = function () {
 }
 
 module.exports.distributeRoles = (gameId) => {
-    client.scardAsync(gameUtils.getAliveKey(gameId)).then((cardinality) => {
-        client.smembersAsync(gameUtils.getAliveKey(gameId)).then((players) => {
+    return client.scardAsync(gameUtils.getAliveKey(gameId)).then((cardinality) => {
+        return client.smembersAsync(gameUtils.getAliveKey(gameId)).then((players) => {
             var roles = distribution[cardinality]
             players.forEach((player) => {
                 var role = roles.randsplice()
