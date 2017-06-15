@@ -17,6 +17,7 @@
     "chai": "^4.0.2"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "redis": "docker run -d -p 6379:6379 redis"
   }
 }

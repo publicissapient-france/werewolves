@@ -45,9 +45,9 @@ Array.prototype.randsplice = function () {
 module.exports.distributeRoles = (gameId) => {
     return client.scardAsync(gameUtils.getAliveKey(gameId)).then((cardinality) => {
         return client.smembersAsync(gameUtils.getAliveKey(gameId)).then((players) => {
-            var roles = distribution[cardinality]
+            const roles = distribution[cardinality];
             players.forEach((player) => {
-                var role = roles.randsplice()
+                const role = roles.randsplice();
                 console.log(player, role)
 
                 client.sadd(gameUtils.getAnyRoleKey(gameId, role), player)
