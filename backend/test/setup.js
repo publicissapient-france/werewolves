@@ -1,9 +1,9 @@
 const expect = require("chai").expect;
-const setup = require("../setup");
 
-const gameUtils = require("../gameUtils")
+const setup = require("../app/game/setup");
+const gameUtils = require("../app/utils/gameUtils")
+const redis = require("../app/services/redis")
 
-const redis = require("../redis")
 const client = redis.getRedisClient()
 
 const gameIdTest = "test"

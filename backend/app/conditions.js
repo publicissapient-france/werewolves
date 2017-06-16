@@ -1,6 +1,6 @@
 'use strict';
 
-const redis = require("./redis")
+const redis = require("./services/redis")
 const client = redis.getRedisClient()
 
 

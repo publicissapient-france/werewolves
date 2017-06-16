@@ -2,7 +2,7 @@
 
 const conditions = require('./conditions');
 
-const redis = require("./redis")
+const redis = require("./services/redis")
 const client = redis.getRedisClient()
 
 module.exports.killPlayer = (gameId, userId) => {

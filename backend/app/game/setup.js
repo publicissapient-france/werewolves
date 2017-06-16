@@ -1,13 +1,21 @@
 'use strict';
 
-const gameUtils = require("./gameUtils")
+const gameUtils = require("./../utils/gameUtils")
+const cards = require("./../rules/cards")
 
-const redis = require("./redis")
+const redis = require("./../services/redis")
+const firebase = require("./../services/firebase")
 const client = redis.getRedisClient()
-const uuidV4 = require('uuid/v4');
+
+const moment = require('moment');
+
 
 module.exports.createGame = () => {
-    return uuidV4()
+    const gameId =  Math.floor(Math.random() * (9999 - 1000)) + 1000;
+    /*firebase.database().ref('games/' + gameId).set({
+     startDate: moment().format()
+     });*/
+    return gameId
 };
 
 module.exports.addPlayer = (gameId, userId) => {
@@ -24,16 +32,6 @@ module.exports.addPlayer = (gameId, userId) => {
         }
     })
 };
-// TODO
-// 9 players : 2 Wolves, 1 Clairvoyant, 1 Cupid, 1 Hunter, 4 Villagers
-// 10 players : 2 Wolves, 1 Clairvoyant, 1 Cupid, 1 Hunter, 1 Little Girl, 4 Villagers
-// 11 players : 2 Wolves, 1 Clairvoyant, 1 Cupid, 1 Hunter, 1 Sorcerer,  5 Villagers
-// 12 players : 3 Wolves, 1 Clairvoyant, 1 Cupid, 1 Hunter, 1 Little Girl, 1 Thief, 4 Villagers
-const distribution = {
-    6: ["wolves", "wolves", "clairvoyant", "captain", "villagers", "villagers"],
-    7: ["wolves", "wolves", "clairvoyant", "captain", "villagers", "villagers", "villagers"],
-    8: ["wolves", "wolves", "clairvoyant", "captain", "villagers", "villagers", "villagers", "villagers"]
-}
 
 
 Array.prototype.randsplice = function () {
@@ -45,7 +43,7 @@ Array.prototype.randsplice = function () {
 module.exports.distributeRoles = (gameId) => {
     return client.scardAsync(gameUtils.getAliveKey(gameId)).then((cardinality) => {
         return client.smembersAsync(gameUtils.getAliveKey(gameId)).then((players) => {
-            const roles = distribution[cardinality];
+            const roles = cards.distribution[cardinality];
             players.forEach((player) => {
                 const role = roles.randsplice();
                 console.log(player, role)
@@ -55,11 +53,9 @@ module.exports.distributeRoles = (gameId) => {
                     client.sadd(gameUtils.getVillagersKey(gameId), player)
                 }
             })
-
         })
     })
 };
-
 
 
 
