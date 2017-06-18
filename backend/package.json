@@ -13,16 +13,22 @@
     "express": "^4.15.3",
     "firebase": "^4.1.2",
     "moment": "^2.18.1",
+    "nodemon": "^1.11.0",
     "redis": "^2.7.1"
   },
   "devDependencies": {
+    "chai": "^4.0.2",
+    "eslint": "^4.0.0",
+    "eslint-config-airbnb-base": "^11.2.0",
+    "eslint-plugin-import": "^2.3.0",
     "mocha": "^3.4.2",
-    "wait-until": "0.0.2",
-    "chai": "^4.0.2"
+    "nodemon": "^1.11.0",
+    "wait-until": "0.0.2"
   },
   "scripts": {
     "test": "mocha",
     "redis": "docker run -d -p 6379:6379 redis",
-    "start": "node app/index.js"
+    "start": "nodemon app/index.js",
+    "lint": "eslint app"
   }
 }

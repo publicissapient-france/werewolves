@@ -1,13 +1,5 @@
-'use strict';
+module.exports.getAliveKey = gameId => `${gameId}-alive`;
 
-module.exports.getAliveKey = (gameId) => {
-    return gameId + "-alive"
-}
+module.exports.getVillagersKey = gameId => `${gameId}-villagers`;
 
-module.exports.getVillagersKey = (gameId) => {
-    return gameId + "-villagers"
-}
-
-module.exports.getAnyRoleKey = (gameId, role) => {
-    return gameId + "-" + role
-}
+module.exports.getAnyRoleKey = (gameId, role) => `${gameId}-${role}`;
