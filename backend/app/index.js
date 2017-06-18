@@ -1,8 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-
 const ApiAiApp = require('actions-on-google').ApiAiApp;
-
 const apiAiSetup = require('./services/apiAi');
 
 const app = express();
@@ -12,7 +10,6 @@ app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');
 });
-
 
 // For demo only
 function playAudio(assistant) {

@@ -12,11 +12,3 @@ module.exports.killPlayer = (gameId, userId) => {
     conditions.checkEndConditions(gameId);
   });
 };
-
-module.exports.hunterIsKilled = (gameId) => {
-  // TODO Hunter kills someone straight away
-};
-
-module.exports.loverIsKilled = (gameId) => {
-  // TODO The other lover is killed straight away
-};
