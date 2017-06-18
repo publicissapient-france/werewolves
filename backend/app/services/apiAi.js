@@ -48,4 +48,3 @@ const startGameIsConfirmed = (assistant) => {
 };
 
 this.apiAiActionMap.set('START_GAME', startGameIsConfirmed);
-
