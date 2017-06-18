@@ -23,14 +23,13 @@ const endMessage = (message) => {
 const createGame = (assistant) => {
     console.log("Creating game")
     const uuid = gameSetup.createGame()
-    console.log(assistant.body_.result.fulfillment.messages)
 
     var message = startMessage()
     var messages = assistant.body_.result.fulfillment.messages
     messages.forEach((messageFromAi) => {
         if (messageFromAi.textToSpeech) {
             console.log("Handling ", messageFromAi.textToSpeech)
-            var addition = messageFromAi.textToSpeech.replace("$gameId", "<say-as interpret-as=\"characters\">" + uuid + "</say-as>")
+            var addition = messageFromAi.textToSpeech.replace("$gameId", uuid.toString().split('').join(' <break time="1" />'))
             message = addSpeechToMessage(message, addition)
         }
     })
@@ -42,21 +41,29 @@ const createGame = (assistant) => {
 this.apiAiActionMap.set('CREATE_GAME', createGame);
 
 const startGame = (assistant) => {
-    console.log("Starting game")
-    const uuid = gameSetup.createGame()
-    console.log(assistant)
-    assistant.tell("Your game id is " + uuid)
+    console.log("Display player name")
+    console.log(assistant.body_.result.fulfillment)
+    const players = gameSetup.getAllPlayers("test")
+    var message = startMessage()
+    message = addSpeechToMessage(message, assistant.body_.result.fulfillment.messages[0].textToSpeech.replace("$playersLength", players.length))
+    players.forEach((player) => {
+        console.log("Handling ", player)
+        message = addSpeechToMessage(message, player + ' <break time="1" />')
+    })
+    message = addSpeechToMessage(message, assistant.body_.result.fulfillment.messages[1].textToSpeech)
+
+    message = endMessage(message)
+    console.log(message)
+    assistant.ask(message)
 }
 
 this.apiAiActionMap.set('START_GAME', startGame);
 
 const startGameIsConfirmed = (assistant) => {
-    console.log("Starting game")
-    const uuid = gameSetup.createGame()
-    console.log(assistant)
-    assistant.tell("Your game id is " + uuid)
+    console.log("START_GAME_CONFIRMED")
+    assistant.tell("Confirmed")
 }
 
-this.apiAiActionMap.set('START_GAME', startGameIsConfirmed);
+this.apiAiActionMap.set('START_GAME_CONFIRMED', startGameIsConfirmed);
 
 

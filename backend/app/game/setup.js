@@ -33,6 +33,17 @@ module.exports.addPlayer = (gameId, userId) => {
     })
 };
 
+module.exports.getAllPlayers = (gameId) => {
+    // Check if user already exists
+    // TODO
+    return ["Qian", "Alexandre","Pabs","Julien","Joachim","Benjamin","Michael","Simone"]
+    /*
+    return client.smemberAsync(gameUtils.getAliveKey(gameId)).then((res) => {
+        return  res
+    })
+    */
+};
+
 
 Array.prototype.randsplice = function () {
     var ri = Math.floor(Math.random() * this.length);

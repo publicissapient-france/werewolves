@@ -9,6 +9,37 @@ const client = redis.getRedisClient()
 const gameIdTest = "test"
 
 describe("Setup", () => {
+    describe("Add player", () => {
+        it("Add non existing player", (done) => {
+            client.flushallAsync().then(() => {
+                setup.addPlayer(gameIdTest, "Pabs").then(() => {
+                    client.scardAsync(gameUtils.getAliveKey(gameIdTest)).then((res) => {
+                        expect(res).to.equal(1)
+                        done()
+                    })
+                })
+            })
+        });
+
+        it("Add another non existing player", (done) => {
+            setup.addPlayer(gameIdTest, "Qian").then(() => {
+                client.scardAsync(gameUtils.getAliveKey(gameIdTest)).then((res) => {
+                    expect(res).to.equal(2)
+                    done()
+                })
+            })
+        });
+
+        it("Add existing player", (done) => {
+            setup.addPlayer(gameIdTest, "Pabs").then(() => {
+                client.scardAsync(gameUtils.getAliveKey(gameIdTest)).then((res) => {
+                    expect(res).to.equal(2)
+                    done()
+                })
+            })
+        });
+    });
+
     describe("Role distribution", () => {
         it("6 players distribution", (done) => {
             client.flushallAsync().then(() => {
@@ -61,37 +92,6 @@ describe("Setup", () => {
                 })
             }).then(() => {
                 done()
-            })
-        });
-    });
-
-    describe("Add player", () => {
-        it("Add non existing player", (done) => {
-            client.flushallAsync().then(() => {
-                setup.addPlayer(gameIdTest, "Pabs").then(() => {
-                    client.scardAsync(gameUtils.getAliveKey(gameIdTest)).then((res) => {
-                        expect(res).to.equal(1)
-                        done()
-                    })
-                })
-            })
-        });
-
-        it("Add another non existing player", (done) => {
-            setup.addPlayer(gameIdTest, "Qian").then(() => {
-                client.scardAsync(gameUtils.getAliveKey(gameIdTest)).then((res) => {
-                    expect(res).to.equal(2)
-                    done()
-                })
-            })
-        });
-
-        it("Add existing player", (done) => {
-            setup.addPlayer(gameIdTest, "Pabs").then(() => {
-                client.scardAsync(gameUtils.getAliveKey(gameIdTest)).then((res) => {
-                    expect(res).to.equal(2)
-                    done()
-                })
             })
         });
     });
