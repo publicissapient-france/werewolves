@@ -28,14 +28,14 @@ class RoleActivity : AppCompatActivity() {
         roleCard.setOnClickListener {
             when (givenRole) {
                 Role.WEREWOLF -> {
-                    roleCard.setBackgroundResource(R.drawable.card_werewolf)
+                    roleCardContent.setBackgroundResource(R.drawable.card_werewolf)
                     rolePrompt.visibility = GONE
                     roleImage.visibility = VISIBLE
                     roleImage.setImageResource(R.drawable.werewolf)
                     roleImage.setColorFilter(Color.WHITE)
                 }
                 Role.VILLAGER -> {
-                    roleCard.setBackgroundResource(R.drawable.card_villager)
+                    roleCardContent.setBackgroundResource(R.drawable.card_villager)
                     rolePrompt.visibility = GONE
                     roleImage.visibility = VISIBLE
                     roleImage.setImageResource(R.drawable.farmer)

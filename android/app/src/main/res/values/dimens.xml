@@ -5,7 +5,7 @@
     <dimen name="wolf_logo_size_small">100dp</dimen>
     <dimen name="margin20">20dp</dimen>
     <dimen name="card_border">15dp</dimen>
-    <dimen name="card_corner_radius">7dp</dimen>
-    <dimen name="card_width">300dp</dimen>
-    <dimen name="card_height">400dp</dimen>
+    <dimen name="card_corner_radius">6dp</dimen>
+    <dimen name="card_width">320dp</dimen>
+    <dimen name="card_height">480dp</dimen>
 </resources>

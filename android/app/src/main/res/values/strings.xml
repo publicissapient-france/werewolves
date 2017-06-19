@@ -8,4 +8,5 @@
     <string name="btn_join_game">Join Game</string>
     <string name="waiting_for_role_prompt">Waiting for other players…</string>
     <string name="tap_to_reveal">Tap to \nreveal \nyour role</string>
+    <string name="btn_start_game">Start Game</string>
 </resources>
