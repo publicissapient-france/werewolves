@@ -4,11 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/bg"
     tools:context="fr.xebia.werewolf.MainActivity">
 
     <android.support.v7.widget.AppCompatImageView
         android:layout_width="@dimen/wolf_logo_size_large"
         android:layout_height="@dimen/wolf_logo_size_large"
+        android:layout_marginBottom="@dimen/margin30"
         android:src="@drawable/werewolf"
         app:layout_constraintBottom_toBottomOf="@+id/guideLineCenter"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -39,19 +41,22 @@
         android:id="@+id/intro"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin30"
+        android:gravity="center"
         android:text="@string/game_intro"
-        android:textSize="16sp"
+        android:textColor="@color/promptTextColor"
+        android:textSize="@dimen/intro_text_size"
+        android:textStyle="bold"
         app:layout_constraintLeft_toLeftOf="@+id/guideLineLeft"
         app:layout_constraintRight_toRightOf="@+id/guideLineRight"
         app:layout_constraintTop_toTopOf="@+id/guideLineCenter" />
 
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/startButton"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/button_width"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin30"
-        android:text="@string/btn_submit"
+        android:text="@string/btn_start_game"
+        android:textColor="@android:color/white"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/intro" />

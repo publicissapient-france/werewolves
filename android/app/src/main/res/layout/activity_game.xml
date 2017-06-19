@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/bg"
     tools:context="fr.xebia.werewolf.GameActivity">
 
     <android.support.constraint.Guideline
@@ -27,23 +28,46 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.9" />
 
+    <android.support.v7.widget.AppCompatImageView
+        android:layout_width="@dimen/wolf_logo_size_small"
+        android:layout_height="@dimen/wolf_logo_size_small"
+        android:layout_marginBottom="@dimen/margin20"
+        android:src="@drawable/werewolf"
+        app:layout_constraintBottom_toTopOf="@+id/gameInfoPrompt"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/gameInfoPrompt"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin30"
+        android:text="@string/game_info_prompt"
+        android:textColor="@color/promptTextColor"
+        android:textSize="@dimen/prompt_info_size"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/editTextGameId"
+        app:layout_constraintLeft_toLeftOf="@+id/guideLineLeft"
+        app:layout_constraintRight_toRightOf="@+id/guideLineRight" />
+
     <android.support.v7.widget.AppCompatEditText
         android:id="@+id/editTextGameId"
-        android:layout_width="240dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/enter_game_id"
         android:imeOptions="actionDone"
         android:inputType="number"
-        app:layout_constraintBottom_toTopOf="@+id/guideLineCenter"
         app:layout_constraintLeft_toLeftOf="@+id/guideLineLeft"
-        app:layout_constraintRight_toRightOf="@+id/guideLineRight" />
+        app:layout_constraintRight_toRightOf="@+id/guideLineRight"
+        app:layout_constraintTop_toBottomOf="@+id/guideLineCenter" />
 
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/buttonSubmitGameId"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/button_width"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin30"
         android:text="@string/btn_submit"
+        android:textColor="@android:color/white"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextGameId" />

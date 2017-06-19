@@ -10,6 +10,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import fr.xebia.werewolf.R.string.waiting_for_role_prompt
 import fr.xebia.werewolf.model.Role
 import kotlinx.android.synthetic.main.activity_role.*
 
@@ -23,19 +24,20 @@ class RoleActivity : AppCompatActivity() {
 
         val gameId = prefsUtil.currentGameId
         val playerName = prefsUtil.currentPlayerName
-        val currentPlayer = FirebaseDatabase.getInstance().reference.child("games/$gameId/players/$playerName/role")
+        val currentPlayerRef = FirebaseDatabase.getInstance().reference.child("games/$gameId/players/$playerName/role")
+        roleWaitingPrompt.text = String.format(getString(waiting_for_role_prompt), playerName)
 
         roleCard.setOnClickListener {
             when (givenRole) {
                 Role.WEREWOLF -> {
-                    roleCard.setBackgroundResource(R.drawable.card_werewolf)
+                    roleCardContent.setBackgroundResource(R.drawable.card_werewolf)
                     rolePrompt.visibility = GONE
                     roleImage.visibility = VISIBLE
                     roleImage.setImageResource(R.drawable.werewolf)
                     roleImage.setColorFilter(Color.WHITE)
                 }
                 Role.VILLAGER -> {
-                    roleCard.setBackgroundResource(R.drawable.card_villager)
+                    roleCardContent.setBackgroundResource(R.drawable.card_villager)
                     rolePrompt.visibility = GONE
                     roleImage.visibility = VISIBLE
                     roleImage.setImageResource(R.drawable.farmer)
@@ -46,7 +48,7 @@ class RoleActivity : AppCompatActivity() {
             }
         }
 
-        currentPlayer.addValueEventListener(object : ValueEventListener {
+        currentPlayerRef.addValueEventListener(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError?) {
 
             }
