@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.iid.FirebaseInstanceId
+import fr.xebia.werewolf.R.string.user_name_prompt
 import fr.xebia.werewolf.model.Player
 import fr.xebia.werewolf.model.Role
 import kotlinx.android.synthetic.main.activity_player_info.*
@@ -16,7 +17,7 @@ class PlayerInfoActivity : AppCompatActivity() {
         setContentView(R.layout.activity_player_info)
 
         val database = FirebaseDatabase.getInstance().reference
-        gameInfoPrompt.text = String.format(getString(R.string.user_name_prompt), prefsUtil.currentGameId)
+        playerInfoPrompt.text = String.format(getString(user_name_prompt), prefsUtil.currentGameId)
 
         buttonJoinGame.setOnClickListener {
             val playerName = editTextPlayerName.text.toString()

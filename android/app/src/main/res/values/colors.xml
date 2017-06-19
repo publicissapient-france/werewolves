@@ -2,8 +2,9 @@
 <resources>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#009688</color>
     <color name="cardBack">#009688</color>
     <color name="cardWerewolf">#B41904</color>
     <color name="cardVillager">#EBAB08</color>
+    <color name="bg">#EEEEEE</color>
 </resources>
