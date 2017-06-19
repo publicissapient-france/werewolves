@@ -10,5 +10,6 @@
     <dimen name="card_height">480dp</dimen>
     <dimen name="button_width">200dp</dimen>
     <dimen name="margin10">10dp</dimen>
-    <dimen name="prompt_info_size">18sp</dimen>
+    <dimen name="prompt_info_size">20sp</dimen>
+    <dimen name="intro_text_size">17sp</dimen>
 </resources>

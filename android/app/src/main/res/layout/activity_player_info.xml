@@ -31,7 +31,7 @@
     <android.support.v7.widget.AppCompatImageView
         android:layout_width="@dimen/wolf_logo_size_small"
         android:layout_height="@dimen/wolf_logo_size_small"
-        android:layout_marginBottom="@dimen/margin10"
+        android:layout_marginBottom="@dimen/margin20"
         android:src="@drawable/werewolf"
         app:layout_constraintBottom_toTopOf="@+id/playerInfoPrompt"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -43,15 +43,16 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
         android:text="@string/user_name_prompt"
-        android:textColor="@android:color/black"
+        android:textColor="@color/promptTextColor"
         android:textSize="@dimen/prompt_info_size"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/editTextPlayerName"
         app:layout_constraintLeft_toLeftOf="@+id/guideLineLeft"
         app:layout_constraintRight_toRightOf="@+id/guideLineRight" />
 
     <android.support.v7.widget.AppCompatEditText
         android:id="@+id/editTextPlayerName"
-        android:layout_width="240dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/enter_player_name"
         android:imeOptions="actionDone"

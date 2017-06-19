@@ -10,10 +10,10 @@
     <android.support.v7.widget.AppCompatImageView
         android:layout_width="@dimen/wolf_logo_size_large"
         android:layout_height="@dimen/wolf_logo_size_large"
+        android:layout_marginBottom="@dimen/margin30"
         android:src="@drawable/werewolf"
         app:layout_constraintBottom_toBottomOf="@+id/guideLineCenter"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginBottom="@dimen/margin20"
         app:layout_constraintRight_toRightOf="parent" />
 
     <android.support.constraint.Guideline
@@ -41,8 +41,11 @@
         android:id="@+id/intro"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:text="@string/game_intro"
-        android:textSize="@dimen/prompt_info_size"
+        android:textColor="@color/promptTextColor"
+        android:textSize="@dimen/intro_text_size"
+        android:textStyle="bold"
         app:layout_constraintLeft_toLeftOf="@+id/guideLineLeft"
         app:layout_constraintRight_toRightOf="@+id/guideLineRight"
         app:layout_constraintTop_toTopOf="@+id/guideLineCenter" />

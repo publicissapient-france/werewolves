@@ -1,13 +1,13 @@
 <resources>
     <string name="app_name">Werewolf</string>
-    <string name="game_intro">A small team of werewolves exist among a larger group of villagers, the identity of who is a villager and who is a wolf is unknown. Each day round, the village lynches a player they believe to be a wolf. Then, each night round the wolves get to eliminate one village player. </string>
+    <string name="game_intro">Werewolves made by Xebia\n\nGoogle Assistant SDK + api.ai + Node.js + Firebase + Android (Kotlin) + Google Cloud Platform </string>
     <string name="enter_game_id">Enter Game ID</string>
     <string name="btn_submit">Submit</string>
     <string name="user_name_prompt">You are about to join game %s. Please Enter your name</string>
     <string name="enter_player_name">Player Name</string>
     <string name="btn_join_game">Join Game</string>
-    <string name="waiting_for_role_prompt">Thank you <b>%s</b> for joining the game, waiting for other players…</string>
+    <string name="waiting_for_role_prompt">Thank you <b>%s</b> for joining! The game will start soon…</string>
     <string name="tap_to_reveal">Tap to \nreveal \nyour role</string>
     <string name="btn_start_game">Start Game</string>
-    <string name="game_info_prompt">Please enter the game ID announced by game master:</string>
+    <string name="game_info_prompt">Enter the game ID announced by the game master:</string>
 </resources>
