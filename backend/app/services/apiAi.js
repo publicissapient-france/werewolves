@@ -8,22 +8,26 @@ const addAudioToMessage = (message, audioUrl, audioSpeech) => `${message}<audio 
 const startMessage = () => '<speak>';
 const endMessage = message => `${message}</speak>`;
 
+const buildMessageFromApiAiUnchanged = (messages) => {
+  let message = startMessage();
+  messages.forEach((messageFromAi) => {
+    if (messageFromAi.textToSpeech) {
+      console.log('Handling ', messageFromAi.textToSpeech);
+      message = addSpeechToMessage(message, messageFromAi.textToSpeech);
+    }
+  });
+  message = endMessage(message);
+  return message;
+};
+
 const resumeApp = (assistant) => {
   console.log('Welcome action');
   console.log('User id', assistant.body_.originalRequest.data.user.userId);
   gameSetup.getCurrentGame(assistant.body_.originalRequest.data.user.userId).then((game) => {
-    if (game.gameId && game.status != "END") {
+    if (game && game.gameId && game.status != "END") {
       assistant.ask(`Resuming message : game status is ${game.status}`);
     } else {
-      let message = startMessage();
-      const messages = assistant.body_.result.fulfillment.messages;
-      messages.forEach((messageFromAi) => {
-        if (messageFromAi.textToSpeech) {
-          console.log('Handling ', messageFromAi.textToSpeech);
-          message = addSpeechToMessage(message, messageFromAi.textToSpeech);
-        }
-      });
-      message = endMessage(message);
+      var message = buildMessageFromApiAiUnchanged(assistant.body_.result.fulfillment.messages);
       assistant.ask(message)
     }
   });
@@ -81,7 +85,14 @@ const startGameIsConfirmed = (assistant) => {
   gameSetup.getCurrentGame(assistant.body_.originalRequest.data.user.userId).then((game) => {
 
     gameSetup.distributeRoles(game.gameId);
-    assistant.tell("Confirmed")
+
+    let message = startMessage();
+    message = addSpeechToMessage(message, assistant.body_.result.fulfillment.messages[0].textToSpeech);
+
+    message = addAudioToMessage(message, 'http://xebia-sandbox.appspot.com/static/wolves.mp3', assistant.body_.result.fulfillment.messages[1].textToSpeech);
+
+    message = endMessage(message);
+    assistant.tell(message)
   })
 };
 

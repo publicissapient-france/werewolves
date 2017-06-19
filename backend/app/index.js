@@ -5,6 +5,7 @@ const apiAiSetup = require('./services/apiAi');
 
 const app = express();
 app.use(bodyParser.json());
+app.use('/static', express.static('public'));
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
