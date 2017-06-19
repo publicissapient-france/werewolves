@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="fr.xebia.werewolf.GameActivity">
+    tools:context="fr.xebia.werewolf.UserInfoActivity">
 
     <android.support.constraint.Guideline
         android:id="@+id/guideLineCenter"
@@ -27,23 +27,33 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.9" />
 
+    <android.support.v7.widget.AppCompatTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:text="@string/user_name_prompt"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/editTextUserName"
+        app:layout_constraintLeft_toLeftOf="@+id/editTextUserName" />
+
     <android.support.v7.widget.AppCompatEditText
-        android:id="@+id/editTextGameId"
+        android:id="@+id/editTextUserName"
         android:layout_width="240dp"
         android:layout_height="wrap_content"
-        android:hint="@string/enter_game_id"
+        android:hint="@string/enter_username"
         app:layout_constraintBottom_toTopOf="@+id/guideLineCenter"
         app:layout_constraintLeft_toLeftOf="@+id/guideLineLeft"
         app:layout_constraintRight_toRightOf="@+id/guideLineRight" />
 
     <android.support.v7.widget.AppCompatButton
-        android:id="@+id/buttonSubmitGameId"
+        android:id="@+id/buttonJoinGame"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin30"
-        android:text="@string/btn_submit"
+        android:text="@string/btn_join_game"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextGameId" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextUserName" />
 
 </android.support.constraint.ConstraintLayout>
