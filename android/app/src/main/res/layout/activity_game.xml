@@ -32,6 +32,8 @@
         android:layout_width="240dp"
         android:layout_height="wrap_content"
         android:hint="@string/enter_game_id"
+        android:imeOptions="actionDone"
+        android:inputType="number"
         app:layout_constraintBottom_toTopOf="@+id/guideLineCenter"
         app:layout_constraintLeft_toLeftOf="@+id/guideLineLeft"
         app:layout_constraintRight_toRightOf="@+id/guideLineRight" />

@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="margin30">30dp</dimen>
+    <dimen name="wolf_logo_size_large">200dp</dimen>
+    <dimen name="wolf_logo_size_small">100dp</dimen>
+    <dimen name="margin20">20dp</dimen>
+    <dimen name="card_border">15dp</dimen>
+    <dimen name="card_corner_radius">7dp</dimen>
+    <dimen name="card_width">300dp</dimen>
+    <dimen name="card_height">400dp</dimen>
 </resources>

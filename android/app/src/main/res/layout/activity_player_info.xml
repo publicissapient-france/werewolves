@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="fr.xebia.werewolf.UserInfoActivity">
+    tools:context="fr.xebia.werewolf.PlayerInfoActivity">
 
     <android.support.constraint.Guideline
         android:id="@+id/guideLineCenter"
@@ -28,23 +28,27 @@
         app:layout_constraintGuide_percent="0.9" />
 
     <android.support.v7.widget.AppCompatTextView
-        android:layout_width="wrap_content"
+        android:id="@+id/gameInfoPrompt"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
         android:text="@string/user_name_prompt"
         android:textColor="@android:color/black"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/editTextUserName"
-        app:layout_constraintLeft_toLeftOf="@+id/editTextUserName" />
+        app:layout_constraintRight_toRightOf="@+id/guideLineRight"
+        app:layout_constraintBottom_toTopOf="@+id/editTextPlayerName"
+        app:layout_constraintLeft_toLeftOf="@+id/guideLineLeft" />
 
     <android.support.v7.widget.AppCompatEditText
-        android:id="@+id/editTextUserName"
+        android:id="@+id/editTextPlayerName"
         android:layout_width="240dp"
         android:layout_height="wrap_content"
-        android:hint="@string/enter_username"
-        app:layout_constraintBottom_toTopOf="@+id/guideLineCenter"
+        android:hint="@string/enter_player_name"
+        android:imeOptions="actionDone"
+        android:inputType="text"
         app:layout_constraintLeft_toLeftOf="@+id/guideLineLeft"
-        app:layout_constraintRight_toRightOf="@+id/guideLineRight" />
+        app:layout_constraintRight_toRightOf="@+id/guideLineRight"
+        app:layout_constraintBottom_toTopOf="@+id/guideLineCenter" />
 
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/buttonJoinGame"
@@ -54,6 +58,6 @@
         android:text="@string/btn_join_game"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextUserName" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextPlayerName" />
 
 </android.support.constraint.ConstraintLayout>

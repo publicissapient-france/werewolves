@@ -3,6 +3,7 @@ package fr.xebia.werewolf
 import android.content.Context
 import android.content.SharedPreferences
 import fr.xebia.werewolf.Constants.Companion.GAME_ID
+import fr.xebia.werewolf.Constants.Companion.PLAYER_NAME
 
 class PrefsUtil(context: Context) {
 
@@ -12,4 +13,8 @@ class PrefsUtil(context: Context) {
     var currentGameId: String
         get() = prefs.getString(GAME_ID, "")
         set(value) = prefs.edit().putString(GAME_ID, value).apply()
+
+    var currentPlayerName: String
+        get() = prefs.getString(PLAYER_NAME, "")
+        set(value) = prefs.edit().putString(PLAYER_NAME, value).apply()
 }

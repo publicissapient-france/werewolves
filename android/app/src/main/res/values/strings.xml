@@ -3,7 +3,9 @@
     <string name="game_intro">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s</string>
     <string name="enter_game_id">Enter Game ID</string>
     <string name="btn_submit">Submit</string>
-    <string name="user_name_prompt">What\'s your name?</string>
-    <string name="enter_username">Enter Username</string>
+    <string name="user_name_prompt">You are about to join game %s. Please Enter your name</string>
+    <string name="enter_player_name">Player Name</string>
     <string name="btn_join_game">Join Game</string>
+    <string name="waiting_for_role_prompt">Waiting for other players…</string>
+    <string name="tap_to_reveal">Tap to \nreveal \nyour role</string>
 </resources>
