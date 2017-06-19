@@ -39,16 +39,14 @@ app.get('/', (req, res) => {
 // Endpoint for home interactions
 app.post('/home', (req, res) => {
   console.log('Home request received');
-  const assistant = new ApiAiApp({ request: req, response: res });
+  const assistant = new ApiAiApp({request: req, response: res});
 
   console.log('Handling request');
   assistant.handleRequest(apiAiSetup.apiAiActionMap);
-
-  // playAudio(assistant)
 });
 
 // Start the server
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-  console.log(`App Werewolves listening on port ${PORT}`);
+  console.log(`App Werewolves by Xebia listening on port ${PORT}`);
 });

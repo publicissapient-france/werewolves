@@ -1,18 +1,12 @@
 const firebase = require('firebase');
 
-/*const config = {
- apiKey: 'AIzaSyAUrl1sJHroKV45wdIUdd1QTZAPqzSLXWY',
- authDomain: 'werewolf-791dc.firebaseapp.com',
- databaseURL: 'https://werewolf-791dc.firebaseio.com/',
- storageBucket: 'bucket.appspot.com',
- };*/
 var config = {
-  apiKey: "AIzaSyAHpIbUZQjP29-Zp208PIuWlPKlfF4LXuU",
-  authDomain: "werewolves-14188.firebaseapp.com",
-  databaseURL: "https://werewolves-14188.firebaseio.com",
-  projectId: "werewolves-14188",
-  storageBucket: "werewolves-14188.appspot.com",
-  messagingSenderId: "478219542172"
+  apiKey: "AIzaSyBJ65Igp0vl6grrb9imchzKITnUI66VSNQ",
+  authDomain: "werewolves-ai-176f8.firebaseapp.com",
+  databaseURL: "https://werewolves-ai-176f8.firebaseio.com",
+  projectId: "werewolves-ai-176f8",
+  storageBucket: "werewolves-ai-176f8.appspot.com",
+  messagingSenderId: "489003325757"
 };
 
 firebase.initializeApp(config);

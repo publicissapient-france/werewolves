@@ -23,7 +23,7 @@ describe("Setup", () => {
 
   describe("Role distribution", () => {
     it("6 players distribution", (done) => {
-      setup.distributeRoles("test").then(() => {
+      setup.distributeRoles(4337).then(() => {
         done()
       })
     });
