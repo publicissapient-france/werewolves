@@ -11,7 +11,7 @@ const endMessage = message => `${message}</speak>`;
 const resumeApp = (assistant) => {
   console.log('Welcome action');
   console.log('User id', assistant.body_.originalRequest.data.user.userId);
-  gameSetup.getGameId(assistant.body_.originalRequest.data.user.userId).then((game) => {
+  gameSetup.getCurrentGame(assistant.body_.originalRequest.data.user.userId).then((game) => {
     if (game.gameId && game.status != "END") {
       assistant.ask(`Resuming message : game status is ${game.status}`);
     } else {
@@ -46,13 +46,14 @@ const createGame = (assistant) => {
     message = endMessage(message);
     console.log(`Game id is ${uuid}`);
 
-    gameSetup.associateUserIdToGameId(assistant.body_.originalRequest.data.user.userId, uuid)
+    gameSetup.associateUserIdToGame(assistant.body_.originalRequest.data.user.userId, uuid)
     assistant.tell(message);
   });
 };
 
 const startGame = (assistant) => {
-  gameSetup.getGameId(assistant.body_.originalRequest.data.user.userId).then((gameId) => {
+  gameSetup.getCurrentGame(assistant.body_.originalRequest.data.user.userId).then((game) => {
+    const gameId = game.gameId
     console.log(`Display all players name for ${gameId}`);
 
     const players = gameSetup.getAllPlayers(gameId).then((players) => {
@@ -77,9 +78,9 @@ const startGame = (assistant) => {
 
 const startGameIsConfirmed = (assistant) => {
   console.log("START_GAME_CONFIRMED");
-  gameSetup.getGameId(assistant.body_.originalRequest.data.user.userId).then((gameId) => {
+  gameSetup.getCurrentGame(assistant.body_.originalRequest.data.user.userId).then((game) => {
 
-    gameSetup.distributeRoles(gameId);
+    gameSetup.distributeRoles(game.gameId);
     assistant.tell("Confirmed")
   })
 };

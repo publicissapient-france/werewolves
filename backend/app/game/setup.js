@@ -4,7 +4,7 @@ const firebase = require('./../services/firebase').getFirebaseClient();
 
 const moment = require('moment');
 
-module.exports.associateUserIdToGameId = (userId, gameId) => {
+module.exports.associateUserIdToGame = (userId, gameId) => {
   return firebase.database().ref().child('devices').child(userId).set({
     startDate: moment().format(),
     gameId: gameId,
@@ -12,7 +12,7 @@ module.exports.associateUserIdToGameId = (userId, gameId) => {
   })
 };
 
-module.exports.getGameId = (userId) => {
+module.exports.getCurrentGame = (userId) => {
   return firebase.database().ref(`devices/${userId}`).once('value').then((game) => {
     if (game && game.val()) {
       return game.val();
