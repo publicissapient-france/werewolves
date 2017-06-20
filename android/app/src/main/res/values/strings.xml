@@ -10,4 +10,7 @@
     <string name="tap_to_reveal">Tap to \nreveal \nyour role</string>
     <string name="btn_start_game">Start Game</string>
     <string name="game_info_prompt">Enter the game ID announced by the game master:</string>
+
+    <string name="error_play_name_taken">This player name is already taken, please change to another one.</string>
+    <string name="error_game_not_exist">This game doesn\'t exist</string>
 </resources>
