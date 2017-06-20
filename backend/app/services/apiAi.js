@@ -1,4 +1,7 @@
+'use strict';
+
 const gameSetup = require('../game/setup');
+const rounds = require('../game/rounds');
 
 module.exports.apiAiActionMap = new Map();
 
@@ -35,7 +38,7 @@ const resumeApp = (assistant) => {
 
 const createGame = (assistant) => {
   console.log('Creating game');
-  gameSetup.createGame().then((id) => {
+  gameSetup.createGame(assistant.body_.originalRequest.data.user.userId).then((id) => {
     const uuid = id;
 
     let message = startMessage();
@@ -88,11 +91,16 @@ const startGameIsConfirmed = (assistant) => {
 
     let message = startMessage();
     message = addSpeechToMessage(message, assistant.body_.result.fulfillment.messages[0].textToSpeech);
+    message = addSpeechToMessage(message, assistant.body_.result.fulfillment.messages[1].textToSpeech);
 
-    message = addAudioToMessage(message, 'http://xebia-sandbox.appspot.com/static/wolves.mp3', assistant.body_.result.fulfillment.messages[1].textToSpeech);
+    message = addAudioToMessage(message, 'https://xebia-sandbox.appspot.com/static/wolves.mp3', 'wolves');
 
     message = endMessage(message);
-    assistant.tell(message)
+
+    rounds.goToNextRound(game.gameId).then(() => {
+      rounds.attachListenerForDeath(game.gameId)
+      assistant.tell(message)
+    })
   })
 };
 

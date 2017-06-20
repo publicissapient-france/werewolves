@@ -1,5 +1,5 @@
-module.exports.getAliveKey = gameId => `${gameId}-alive`;
+'use strict';
 
-module.exports.getVillagersKey = gameId => `${gameId}-villagers`;
-
-module.exports.getAnyRoleKey = (gameId, role) => `${gameId}-${role}`;
+const gameStatuses = ["INITIAL", "ROUND", "FINISHED"];
+const gamePhases = ["DAY", "NIGHT"];
+const nightPhases = ["WEREWOLVES"];

@@ -11,5 +11,11 @@
 * rules directory stores all game rules.
 * index.js is the main entry point to an express server.
 
+## Datastructure
+See datastruc.json for a sample
 
-
+## Game playing
+* A round is a pair Night / Day
+* A phase is either night or day. A round has 2 phases
+* A subPhase is a simple event. At first, the only 2 subphases are WEREWOLVES_VOTE at night, and VILLAGERS_VOTE at day.
+* Backend listen to the add of the "death" property in currentSubPhase node.

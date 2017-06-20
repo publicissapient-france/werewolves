@@ -1,0 +1,56 @@
+{
+  "devices" : {
+    "APhe68GqX_OohJvmKPhE9IEARUMP" : {
+      "gameId" : 6966,
+      "startDate" : "2017-06-20T16:11:11+00:00",
+      "status" : "INITIAL"
+    }
+  },
+  "games" : {
+    "6966" : {
+      "currentRound" : {
+        "currentPhase" : {
+          "currentSubPhase" : {
+            "subPhaseState" : "WEREWOLVES_VOTE"
+          },
+          "phaseState" : "NIGHT"
+        },
+        "roundNumber" : 1
+      },
+      "players" : {
+        "alice" : {
+          "deviceId" : "eTR5BERpgF0",
+          "name" : "alice",
+          "role" : "werewolf"
+        },
+        "bob" : {
+          "deviceId" : "eTR5BERpgF0",
+          "name" : "bob",
+          "role" : "villager"
+        },
+        "bruno" : {
+          "deviceId" : "eTR5BERpgF0",
+          "name" : "bruno",
+          "role" : "villager"
+        },
+        "pablo" : {
+          "deviceId" : "cQVywR-9B7w",
+          "name" : "pablo",
+          "role" : "villager"
+        },
+        "qian" : {
+          "deviceId" : "eTR5BERpgF0",
+          "name" : "qian",
+          "role" : "villager"
+        },
+        "sherry" : {
+          "deviceId" : "eTR5BERpgF0",
+          "name" : "sherry",
+          "role" : "werewolf"
+        }
+      },
+      "startDate" : "2017-06-19T16:27:19+00:00",
+      "status" : "ROUND_01"
+    }
+  }
+}

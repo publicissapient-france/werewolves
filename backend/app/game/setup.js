@@ -12,8 +12,8 @@ module.exports.associateUserIdToGame = (userId, gameId) => {
   })
 };
 
-module.exports.getCurrentGame = (userId) => {
-  return firebase.database().ref(`devices/${userId}`).once('value').then((game) => {
+module.exports.getCurrentGame = (deviceId) => {
+  return firebase.database().ref(`devices/${deviceId}`).once('value').then((game) => {
     if (game && game.val()) {
       return game.val();
     }
@@ -21,12 +21,13 @@ module.exports.getCurrentGame = (userId) => {
   })
 };
 
-module.exports.createGame = () => {
+module.exports.createGame = (deviceId) => {
   const gameId = Math.floor(Math.random() * (9999 - 1000)) + 1000;
   return firebase.database().ref().child('games').child(gameId).set({
     startDate: moment().format(),
     status: "INITIAL",
-    players: {}
+    players: {},
+    deviceId: deviceId
   }).then(() => {
     return gameId;
   })
