@@ -39,24 +39,20 @@
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/intro"
+        style="@style/wwPromptTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="@string/game_intro"
-        android:textColor="@color/promptTextColor"
-        android:textSize="@dimen/intro_text_size"
-        android:textStyle="bold"
         app:layout_constraintLeft_toLeftOf="@+id/guideLineLeft"
         app:layout_constraintRight_toRightOf="@+id/guideLineRight"
         app:layout_constraintTop_toTopOf="@+id/guideLineCenter" />
 
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/startButton"
-        android:layout_width="@dimen/button_width"
-        android:layout_height="wrap_content"
+        style="@style/wwButton"
         android:layout_marginTop="@dimen/margin30"
         android:text="@string/btn_start_game"
-        android:textColor="@android:color/white"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/intro" />

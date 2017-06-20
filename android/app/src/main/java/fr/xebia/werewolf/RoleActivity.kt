@@ -4,6 +4,8 @@ import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.MotionEvent.ACTION_DOWN
+import android.view.MotionEvent.ACTION_UP
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import com.google.firebase.database.DataSnapshot
@@ -27,23 +29,39 @@ class RoleActivity : AppCompatActivity() {
         val currentPlayerRef = FirebaseDatabase.getInstance().reference.child("games/$gameId/players/$playerName/role")
         roleWaitingPrompt.text = String.format(getString(waiting_for_role_prompt), playerName)
 
-        roleCard.setOnClickListener {
-            when (givenRole) {
-                Role.WEREWOLF -> {
-                    roleCardContent.setBackgroundResource(R.drawable.card_werewolf)
-                    rolePrompt.visibility = GONE
-                    roleImage.visibility = VISIBLE
-                    roleImage.setImageResource(R.drawable.werewolf)
-                    roleImage.setColorFilter(Color.WHITE)
+        roleCard.setOnTouchListener { view, motionEvent ->
+            when (motionEvent.action) {
+                ACTION_DOWN -> {
+                    when (givenRole) {
+                        Role.WEREWOLF -> {
+                            roleCardContent.setBackgroundResource(R.drawable.card_werewolf)
+                            rolePrompt.visibility = GONE
+                            roleImage.visibility = VISIBLE
+                            roleImage.setImageResource(R.drawable.werewolf)
+                            roleImage.setColorFilter(Color.WHITE)
+                            true
+                        }
+                        Role.VILLAGER -> {
+                            roleCardContent.setBackgroundResource(R.drawable.card_villager)
+                            rolePrompt.visibility = GONE
+                            roleImage.visibility = VISIBLE
+                            roleImage.setImageResource(R.drawable.farmer)
+                            roleImage.setColorFilter(Color.WHITE)
+                            true
+                        }
+                        Role.EMPTY -> {
+                            true
+                        }
+                    }
                 }
-                Role.VILLAGER -> {
-                    roleCardContent.setBackgroundResource(R.drawable.card_villager)
-                    rolePrompt.visibility = GONE
-                    roleImage.visibility = VISIBLE
-                    roleImage.setImageResource(R.drawable.farmer)
-                    roleImage.setColorFilter(Color.WHITE)
+                ACTION_UP -> {
+                    roleCardContent.setBackgroundResource(R.drawable.card_back)
+                    rolePrompt.visibility = VISIBLE
+                    roleImage.visibility = GONE
+                    true
                 }
-                Role.EMPTY -> {
+                else -> {
+                    true
                 }
             }
         }

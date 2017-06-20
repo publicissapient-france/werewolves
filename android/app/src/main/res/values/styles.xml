@@ -6,8 +6,19 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-
         <item name="colorButtonNormal">@color/colorAccent</item>
+        <item name="android:fontFamily">@font/norwester</item>
     </style>
 
+    <style name="wwPromptTextView">
+        <item name="android:textColor">@color/promptTextColor</item>
+        <item name="android:textSize">@dimen/prompt_info_size</item>
+    </style>
+
+    <style name="wwButton">
+        <item name="android:layout_width">@dimen/button_width</item>
+        <item name="android:layout_height">@dimen/button_height</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">@dimen/button_text_size</item>
+    </style>
 </resources>
