@@ -2,8 +2,8 @@
 
 buildscript {
     ext {
-        kotlinVersion = '1.1.2-5'
-        supportLibraryVersion = '26.0.0-beta2'
+        kotlinVersion = '1.1.2-4'
+        supportLibraryVersion = '26.0.0-beta1'
         firebaseVersion = '11.0.1'
     }
     repositories {
