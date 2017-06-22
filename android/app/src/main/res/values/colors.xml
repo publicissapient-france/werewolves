@@ -4,8 +4,9 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#009688</color>
     <color name="cardBack">#009688</color>
-    <color name="cardWerewolf">#B41904</color>
-    <color name="cardVillager">#EBAB08</color>
+
+    <color name="werewolfRed">#B41904</color>
+    <color name="villageYellow">#EBAB08</color>
     <color name="bg">#EEEEEE</color>
     <color name="promptTextColor">#4B4B4B</color>
 </resources>

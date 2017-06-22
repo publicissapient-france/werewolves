@@ -14,16 +14,16 @@
         <item name="android:textSize">@dimen/prompt_info_size</item>
     </style>
 
-    <style name="wwButtonGreen">
-        <item name="colorButtonNormal">@color/colorAccent</item>
+    <style name="wwButtonGreen" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:background">@drawable/btn_green</item>
         <item name="android:layout_width">@dimen/button_width</item>
         <item name="android:layout_height">@dimen/button_height</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textSize">@dimen/button_text_size</item>
     </style>
 
-    <style name="wwButtonRed">
-        <item name="colorButtonNormal">@color/cardWerewolf</item>
+    <style name="wwButtonRed" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:background">@drawable/btn_red</item>
         <item name="android:layout_width">@dimen/button_width</item>
         <item name="android:layout_height">@dimen/button_height</item>
         <item name="android:textColor">@android:color/white</item>
