@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.activity_game.*
 
@@ -16,12 +15,11 @@ class GameActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
 
-        val database = FirebaseDatabase.getInstance().reference
 
         buttonSubmitGameId.setOnClickListener {
             val gameId = editTextGameId.text.toString()
             if (!gameId.isEmpty()) {
-                val gameRef = database.child("games").child(gameId)
+                val gameRef = firebaseDbRef.child("games").child(gameId)
                 gameRef.addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(p0: DataSnapshot?) {
                         if (p0!!.exists()) {

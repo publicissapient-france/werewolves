@@ -53,14 +53,17 @@
 
     <android.support.v7.widget.CardView
         android:id="@+id/roleCard"
+        style="@+id/buttonReadyToPlay"
         android:layout_width="@dimen/card_width"
         android:layout_height="@dimen/card_height"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:animateLayoutChanges="true"
+        app:layout_constraintBottom_toTopOf="@+id/buttonReadyToPlay"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        card_view:cardCornerRadius="@dimen/card_corner_radius">
+        card_view:cardCornerRadius="@dimen/card_corner_radius"
+        tools:visibility="visible">
 
         <RelativeLayout
             android:id="@+id/roleCardContent"
@@ -89,5 +92,18 @@
                 tools:visibility="gone" />
         </RelativeLayout>
     </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/buttonReadyToPlay"
+        style="@style/wwButtonGreen"
+        android:animateLayoutChanges="true"
+        android:layout_marginBottom="@dimen/margin20"
+        android:layout_marginTop="@dimen/margin20"
+        android:text="@string/btn_ready_to_play"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:visibility="visible" />
 
 </android.support.constraint.ConstraintLayout>

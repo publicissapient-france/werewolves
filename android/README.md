@@ -1,9 +1,21 @@
 Werewolves Android
 ==================
 
+# Configuration
+
+Companion Android app is built with kotlin and targeting O preview.
+
 # TODO
 
 ## Screens
+
+Screen transition:
+
+- In order for game to start, user should click on the `I'm Ready` button after they check out their
+role & display `the night will fall... `
+- Once everybody is ready, assistant will announce the game starts
+    - werewolves will now see the screen for killing villagers
+    - villagers shouldn't see anything yet
 
 ### Night screen
 

@@ -3,6 +3,19 @@
     "gamexebiafr01": {
       "timestamp": 1459361875337,
       "state": "???",
+      "rounds": {
+        "current": {
+          "phase": {
+            "subphase": "VILLAGERS_VOTE"
+          },
+          "number": 3,
+          "state": "DAY"
+        },
+        "1": {
+        },
+        "2": {
+        }
+      },
       "players": {
         "qian": {
           "deviceId": "deviceId1",
