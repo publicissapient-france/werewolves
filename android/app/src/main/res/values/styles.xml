@@ -6,7 +6,6 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="colorButtonNormal">@color/colorAccent</item>
         <item name="android:fontFamily">@font/norwester</item>
     </style>
 
@@ -15,7 +14,16 @@
         <item name="android:textSize">@dimen/prompt_info_size</item>
     </style>
 
-    <style name="wwButton">
+    <style name="wwButtonGreen" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:background">@drawable/btn_green</item>
+        <item name="android:layout_width">@dimen/button_width</item>
+        <item name="android:layout_height">@dimen/button_height</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">@dimen/button_text_size</item>
+    </style>
+
+    <style name="wwButtonRed" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:background">@drawable/btn_red</item>
         <item name="android:layout_width">@dimen/button_width</item>
         <item name="android:layout_height">@dimen/button_height</item>
         <item name="android:textColor">@android:color/white</item>

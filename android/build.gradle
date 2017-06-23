@@ -5,6 +5,7 @@ buildscript {
         kotlinVersion = '1.1.2-4'
         supportLibraryVersion = '26.0.0-beta1'
         firebaseVersion = '11.0.1'
+        constraintLayoutVersion = '1.0.2'
     }
     repositories {
         maven { url 'https://maven.google.com' }

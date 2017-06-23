@@ -4,5 +4,6 @@ class Constants {
     companion object {
         val GAME_ID = "GAME_ID"
         val PLAYER_NAME = "PLAYER_NAME"
+        val PLAYER_ROLE = "PLAYER_ROLE"
     }
 }

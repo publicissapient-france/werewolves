@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.iid.FirebaseInstanceId
 import fr.xebia.werewolf.R.string.user_name_prompt
@@ -20,7 +19,6 @@ class PlayerInfoActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player_info)
 
-        val database = FirebaseDatabase.getInstance().reference
         playerInfoPrompt.text = String.format(getString(user_name_prompt), prefsUtil.currentGameId)
 
         buttonJoinGame.setOnClickListener {
@@ -30,7 +28,7 @@ class PlayerInfoActivity : AppCompatActivity() {
                 val userId = FirebaseInstanceId.getInstance().id
                 val player = Player(playerName, userId, Role.EMPTY)
 
-                val currentGameRef = database.child("games").child(prefsUtil.currentGameId)
+                val currentGameRef = firebaseDbRef.child("games").child(prefsUtil.currentGameId)
                 val playerRef = currentGameRef.child("players").child(playerName)
                 playerRef.addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onCancelled(p0: DatabaseError?) {

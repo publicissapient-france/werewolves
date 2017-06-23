@@ -10,7 +10,6 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import fr.xebia.werewolf.R.string.waiting_for_role_prompt
 import fr.xebia.werewolf.model.Role
@@ -26,12 +25,13 @@ class RoleActivity : AppCompatActivity() {
 
         val gameId = prefsUtil.currentGameId
         val playerName = prefsUtil.currentPlayerName
-        val currentPlayerRef = FirebaseDatabase.getInstance().reference.child("games/$gameId/players/$playerName/role")
+        val currentPlayerRef = firebaseDbRef.child("games/$gameId/players/$playerName/role")
         roleWaitingPrompt.text = String.format(getString(waiting_for_role_prompt), playerName)
 
         roleCard.setOnTouchListener { view, motionEvent ->
             when (motionEvent.action) {
                 ACTION_DOWN -> {
+                    // TODO send ready to firebase
                     when (givenRole) {
                         Role.WEREWOLF -> {
                             roleCardContent.setBackgroundResource(R.drawable.card_werewolf)
@@ -68,14 +68,14 @@ class RoleActivity : AppCompatActivity() {
 
         currentPlayerRef.addValueEventListener(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError?) {
-
+                // void
             }
 
             override fun onDataChange(p0: DataSnapshot?) {
-                Log.d("WEREWOLF", "role changed to ${p0!!.value}")
                 try {
-                    givenRole = Role.valueOf(p0.value.toString().toUpperCase())
+                    givenRole = Role.valueOf(p0!!.value.toString().toUpperCase())
                     if (givenRole != Role.EMPTY) {
+                        prefsUtil.currentPlayerRole = givenRole.name
                         roleWaiting.visibility = GONE
                         roleCard.visibility = VISIBLE
                     }

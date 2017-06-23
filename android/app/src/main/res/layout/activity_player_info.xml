@@ -61,7 +61,7 @@
 
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/buttonJoinGame"
-        style="@style/wwButton"
+        style="@style/wwButtonGreen"
         android:layout_marginTop="@dimen/margin30"
         android:text="@string/btn_join_game"
         app:layout_constraintLeft_toLeftOf="parent"

@@ -13,4 +13,7 @@
 
     <string name="error_play_name_taken">This player name is already taken, please change to another one.</string>
     <string name="error_game_not_exist">This game doesn\'t exist</string>
+    <string name="werewolves_vote_prompt">Please kill a villager</string>
+    <string name="btn_kill">Kill</string>
+    <string name="btn_ready_to_play">Ready to Play</string>
 </resources>

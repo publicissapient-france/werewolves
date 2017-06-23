@@ -61,7 +61,7 @@
 
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/buttonSubmitGameId"
-        style="@style/wwButton"
+        style="@style/wwButtonGreen"
         android:layout_marginTop="@dimen/margin30"
         android:text="@string/btn_submit"
         app:layout_constraintLeft_toLeftOf="parent"
