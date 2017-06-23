@@ -97,10 +97,8 @@ const startGameIsConfirmed = (assistant) => {
 
     message = endMessage(message);
 
-    rounds.goToNextRound(game.gameId).then(() => {
-      rounds.attachListenerForDeath(game.gameId)
-      assistant.tell(message)
-    })
+    assistant.tell(message)
+
   })
 };
 

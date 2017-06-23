@@ -1,32 +1,42 @@
 const expect = require("chai").expect;
+const proxyquire = require('proxyquire');
+const firebasemock = require('firebase-mock');
 
-const setup = require("../app/game/setup");
-const gameUtils = require("../app/utils/gameUtils")
+const rootMockPath = "testPath"
 
-const gameIdTest = "test"
+var mockdatabase = new firebasemock.MockFirebase();
+var mockauth = new firebasemock.MockFirebase();
+var mocksdk = firebasemock.MockFirebaseSdk(() => {
+  return mockdatabase.child(rootMockPath);
+}, () => {
+  return mockauth;
+});
 
-const firebase = require('./../app/services/firebase').getFirebaseClient();
+var setup = proxyquire('../app/game/setup', {
+  firebase: mocksdk
+});
+
 
 describe("Setup", () => {
 
   describe("Create game", () => {
     it("Create game", (done) => {
-      setup.createGame().then((id) => {
-        firebase.database().ref().child(`games/${id}`).once('value').then((game) => {
-          expect(game.val().status).to.equal("INITIAL")
-          firebase.database().ref().child(`games/${id}`).remove()
-          done()
-        });
-      });
+      const id = setup.createGame("device_1234");
+      mockdatabase.flush();
+      console.log(id)
+
+      var data = mockdatabase.getData();
+      expect(data[rootMockPath]["games"][id]['status']).to.equal("INITIAL");
+      done();
     });
   });
 
   describe("Role distribution", () => {
-    it("6 players distribution", (done) => {
-      setup.distributeRoles(4337).then(() => {
-        done()
-      })
-    });
+    /*it("6 players distribution", (done) => {
+     setup.distributeRoles(4337).then(() => {
+     done()
+     })
+     });*/
 
     /*it("7 players distribution", (done) => {
      client.flushallAsync().then(() => {

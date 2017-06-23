@@ -1,4 +1,5 @@
-const gameUtils = require('./../utils/gameUtils');
+'use strict';
+
 const cards = require('./../rules/cards');
 const firebase = require('./../services/firebase').getFirebaseClient();
 
@@ -23,14 +24,16 @@ module.exports.getCurrentGame = (deviceId) => {
 
 module.exports.createGame = (deviceId) => {
   const gameId = Math.floor(Math.random() * (9999 - 1000)) + 1000;
-  return firebase.database().ref().child('games').child(gameId).set({
+  const json = {};
+  json[gameId] = {
     startDate: moment().format(),
     status: "INITIAL",
     players: {},
-    deviceId: deviceId
-  }).then(() => {
-    return gameId;
-  })
+    deviceId: deviceId,
+    roundNumber: 0
+  };
+  firebase.database().ref().child('games').set(json);
+  return gameId;
 };
 
 Array.prototype.randsplice = function randsplice() {
@@ -43,7 +46,7 @@ module.exports.getAllPlayers = (gameId) => {
   console.log("gameSetup.getAllPlayers");
   return firebase.database().ref(`games/${gameId}/players`).once('value').then((players) => {
     const allPlayers = [];
-    for (player in players.val()) {
+    for (var player in players.val()) {
       allPlayers.push(player)
     }
     console.log("Return ", allPlayers);
@@ -67,7 +70,7 @@ module.exports.distributeRoles = (gameId) => {
       updates.push(firebase.database().ref(`games/${gameId}/players/${player}`).update({role: role.toString()}));
       console.log(player, role)
     });
+    updates.push(firebase.database().ref(`games/${gameId}`).set({nbPlayers: players.length}))
     return Promise.all(updates)
   });
 };
-
