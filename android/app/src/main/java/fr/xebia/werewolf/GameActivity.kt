@@ -14,8 +14,7 @@ class GameActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
-
-
+        
         buttonSubmitGameId.setOnClickListener {
             val gameId = editTextGameId.text.toString()
             if (!gameId.isEmpty()) {
