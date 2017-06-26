@@ -39,21 +39,21 @@ const resumeApp = (assistant) => {
 const createGame = (assistant) => {
   console.log('Creating game');
   gameSetup.createGame(assistant.body_.originalRequest.data.user.userId).then((id) => {
-    const uuid = id;
+    console.log("Game id is", id)
 
     let message = startMessage();
     const messages = assistant.body_.result.fulfillment.messages;
     messages.forEach((messageFromAi) => {
       if (messageFromAi.textToSpeech) {
         console.log('Handling ', messageFromAi.textToSpeech);
-        const addition = messageFromAi.textToSpeech.replace('$gameId', uuid.toString().split('').join(' <break time="1" />'));
+        const addition = messageFromAi.textToSpeech.replace('$gameId', id.toString().split('').join(' <break time="1" />'));
         message = addSpeechToMessage(message, addition);
       }
     });
     message = endMessage(message);
-    console.log(`Game id is ${uuid}`);
+    console.log(`Game id is ${id}`);
 
-    gameSetup.associateUserIdToGame(assistant.body_.originalRequest.data.user.userId, uuid)
+    gameSetup.associateUserIdToGame(assistant.body_.originalRequest.data.user.userId, id)
     assistant.tell(message);
   });
 };
@@ -96,6 +96,8 @@ const startGameIsConfirmed = (assistant) => {
     message = addAudioToMessage(message, 'https://xebia-sandbox.appspot.com/static/wolves.mp3', 'wolves');
 
     message = endMessage(message);
+
+    rounds.waitForPlayersToBeReady(game.gameId);
 
     assistant.tell(message)
 

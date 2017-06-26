@@ -82,8 +82,8 @@ module.exports.stateMachine = (gameId) => {
           if (endMessage) {
             return this.archiveCurrentRound(gameId).then(() => {
               // Update states
-              return game.update({status: endMessage}).then(() => {
-                return firebase.database().ref(`devices/${game.deviceId}`).update({status: endMessage})
+              return firebase.database().ref(`games/${gameId}`).update({status: endMessage}).then(() => {
+                return firebase.database().ref(`devices/${game.val().deviceId}`).update({status: endMessage})
               })
             });
           } else {
@@ -156,7 +156,6 @@ module.exports.waitForPlayersToBeReady = (gameId) => {
               players.forEach((player) => {
                 updates.push(firebase.database().ref(`games/${gameId}/players/${player}`).update({status: "ALIVE"}));
               });
-              updates.push(firebase.database().ref(`games/${gameId}`).set({nbPlayers: players.length}));
               return Promise.all(updates)
             });
 

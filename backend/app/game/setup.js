@@ -32,8 +32,9 @@ module.exports.createGame = (deviceId) => {
     deviceId: deviceId,
     roundNumber: 0
   };
-  firebase.database().ref().child('games').set(json);
-  return gameId;
+  return firebase.database().ref().child('games').update(json).then(() => {
+    return gameId;
+  })
 };
 
 Array.prototype.randsplice = function randsplice() {
@@ -70,7 +71,7 @@ module.exports.distributeRoles = (gameId) => {
       updates.push(firebase.database().ref(`games/${gameId}/players/${player}`).update({role: role.toString()}));
       console.log(player, role)
     });
-    updates.push(firebase.database().ref(`games/${gameId}`).set({nbPlayers: players.length}))
+    updates.push(firebase.database().ref(`games/${gameId}`).update({nbPlayers: players.length}))
     return Promise.all(updates)
   });
 };
