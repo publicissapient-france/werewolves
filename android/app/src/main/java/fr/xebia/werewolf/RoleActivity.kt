@@ -10,14 +10,17 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import fr.xebia.werewolf.R.string.waiting_for_role_prompt
+import fr.xebia.werewolf.model.PlayerState
 import fr.xebia.werewolf.model.Role
 import kotlinx.android.synthetic.main.activity_role.*
 
 class RoleActivity : AppCompatActivity() {
 
     private var givenRole: Role = Role.EMPTY
+    private lateinit var currentPlayerRef: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,15 +28,15 @@ class RoleActivity : AppCompatActivity() {
 
         val gameId = prefsUtil.currentGameId
         val playerName = prefsUtil.currentPlayerName
-        val currentPlayerRef = firebaseDbRef.child("games/$gameId/players/$playerName/role")
+        currentPlayerRef = firebaseDbRef.child("games/$gameId/players/$playerName")
         roleWaitingPrompt.text = String.format(getString(waiting_for_role_prompt), playerName)
 
         roleCard.setOnTouchListener { view, motionEvent ->
             when (motionEvent.action) {
                 ACTION_DOWN -> {
-                    // TODO send ready to firebase
                     when (givenRole) {
                         Role.WEREWOLF -> {
+                            setPlayerReady()
                             roleCardContent.setBackgroundResource(R.drawable.card_werewolf)
                             rolePrompt.visibility = GONE
                             roleImage.visibility = VISIBLE
@@ -42,6 +45,7 @@ class RoleActivity : AppCompatActivity() {
                             true
                         }
                         Role.VILLAGER -> {
+                            setPlayerReady()
                             roleCardContent.setBackgroundResource(R.drawable.card_villager)
                             rolePrompt.visibility = GONE
                             roleImage.visibility = VISIBLE
@@ -66,7 +70,7 @@ class RoleActivity : AppCompatActivity() {
             }
         }
 
-        currentPlayerRef.addValueEventListener(object : ValueEventListener {
+        currentPlayerRef.child("/role").addValueEventListener(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError?) {
                 // void
             }
@@ -84,5 +88,9 @@ class RoleActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    private fun setPlayerReady() {
+        currentPlayerRef.child("status").setValue(PlayerState.READY.name)
     }
 }

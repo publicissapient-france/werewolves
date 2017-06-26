@@ -1,5 +1,5 @@
 package fr.xebia.werewolf.model
 
 enum class PlayerState {
-    ALIVE, DEAD;
+    JOIN, READY, ALIVE, DEAD;
 }
