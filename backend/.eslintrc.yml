@@ -1,6 +1,9 @@
 extends: airbnb-base
 plugins:
   - import
+env:
+    mocha: true
+    node: true
 rules :
   no-console:
     - off
@@ -15,3 +18,5 @@ rules :
   no-extend-native:
     - off
   indent: ["error", 2]
+  no-plusplus:
+    - off
