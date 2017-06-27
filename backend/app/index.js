@@ -40,7 +40,7 @@ app.get('/', (req, res) => {
 // Endpoint for home interactions
 app.post('/home', (req, res) => {
   console.log('Home request received');
-  const assistant = new ApiAiApp({request: req, response: res});
+  const assistant = new ApiAiApp({ request: req, response: res });
 
   console.log('Handling request');
   assistant.handleRequest(apiAiSetup.apiAiActionMap);

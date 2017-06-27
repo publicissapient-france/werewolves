@@ -29,7 +29,7 @@
     "wait-until": "0.0.2"
   },
   "scripts": {
-    "test": "mocha",
+    "test": "mocha test/**",
     "redis": "docker run -d -p 6379:6379 redis",
     "start": "nodemon app/index.js",
     "lint": "eslint app"
