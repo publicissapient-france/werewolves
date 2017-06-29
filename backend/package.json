@@ -13,7 +13,6 @@
     "express": "^4.15.3",
     "firebase": "^4.1.2",
     "moment": "^2.18.1",
-    "nodemon": "^1.11.0",
     "redis": "^2.7.1"
   },
   "devDependencies": {
@@ -23,13 +22,15 @@
     "eslint-plugin-import": "^2.3.0",
     "firebase-mock": "^1.0.9",
     "firebase-server": "^0.10.1",
+    "istanbul": "^0.4.5",
     "mocha": "^3.4.2",
     "nodemon": "^1.11.0",
     "proxyquire": "^1.8.0",
     "wait-until": "0.0.2"
   },
   "scripts": {
-    "test": "mocha test/**",
+    "test": "./node_modules/istanbul/lib/cli.js --include-all-sources cover ./node_modules/mocha/bin/_mocha -- --recursive --timeout 20000 -R spec test",
+    "posttest": "./node_modules/istanbul/lib/cli.js report clover",
     "redis": "docker run -d -p 6379:6379 redis",
     "start": "nodemon app/index.js",
     "lint": "eslint app"
