@@ -9,10 +9,11 @@ import com.google.firebase.database.ValueEventListener
 import fr.xebia.werewolf.R
 import fr.xebia.werewolf.firebaseDbRef
 import fr.xebia.werewolf.model.Player
+import fr.xebia.werewolf.model.Role
 import fr.xebia.werewolf.prefsUtil
 import kotlinx.android.synthetic.main.activity_night.*
 
-class NightActivity : AppCompatActivity() {
+class NightKillActivity : AppCompatActivity() {
 
     private lateinit var playerAdapter: PlayerAdapter
 
@@ -30,6 +31,9 @@ class NightActivity : AppCompatActivity() {
             override fun onDataChange(p0: DataSnapshot?) {
                 val players = mutableListOf<Player>()
                 p0!!.children.mapTo(players) { it.getValue(Player::class.java) as Player }
+                players
+                        .filter { it.role == Role.WEREWOLF }
+                        .forEach { players.remove(it) }
                 setupRecyclerView(players)
             }
         })
