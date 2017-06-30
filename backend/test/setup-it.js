@@ -31,7 +31,7 @@ describe('Games', () => {
   let gamesToDelete = [];
 
   it('Villagers should win !', (done) => {
-    const deviceId = '3';
+    const deviceId = 'test_1';
     let gameId;
     Setup.createGame(deviceId)
       .then((_gameId) => {
@@ -64,7 +64,7 @@ describe('Games', () => {
   });
 
   it('Werewolves should win !', (done) => {
-    const deviceId = '1';
+    const deviceId = 'test_2';
     let gameId;
     Setup.createGame(deviceId)
       .then((_gameId) => {
@@ -101,6 +101,8 @@ describe('Games', () => {
     gamesToDelete.forEach((gameId) => {
       firebase.database().ref().child(`games/${gameId}`).remove()
     })
+    firebase.database().ref().child(`devices/test_1`).remove()
+    firebase.database().ref().child(`devices/test_2`).remove()
   });
 
 
