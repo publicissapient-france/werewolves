@@ -22,6 +22,8 @@
         android:id="@+id/villagerRecyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginBottom="@dimen/margin20"
+        android:layout_marginTop="@dimen/margin20"
         app:layout_constraintBottom_toTopOf="@+id/buttonKillVillager"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -33,6 +35,7 @@
         style="@style/wwButtonRed"
         android:layout_marginBottom="@dimen/margin30"
         android:text="@string/btn_kill"
+        android:enabled="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />

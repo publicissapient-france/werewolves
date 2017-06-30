@@ -1,3 +1,3 @@
 package fr.xebia.werewolf.model
 
-data class KillIntention(val wantToKill: String)
+data class KillIntention(val wantToKill: String = "")

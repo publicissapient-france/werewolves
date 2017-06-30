@@ -4,4 +4,4 @@ package fr.xebia.werewolf.model
 data class Player(val name: String = "",
                   val deviceId: String = "",
                   val role: Role = Role.EMPTY,
-                  val status: String = PlayerState.JOIN.name)
+                  val status: PlayerState = PlayerState.JOIN)
