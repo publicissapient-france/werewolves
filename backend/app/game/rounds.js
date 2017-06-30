@@ -63,7 +63,6 @@ module.exports.createNewPhase = (gameId) => {
 
 module.exports.stateMachine = (gameId) => {
   return firebase.database().ref(`games/${gameId}`).once('value').then((game) => {
-    console.log(game.val());
     if (game && game.val().rounds) {
       const currentPhase = game.val().rounds.current.phase;
       return this.archiveCurrentPhase(gameId).then(() => {
@@ -91,7 +90,6 @@ module.exports.attachListenerForDeath = (gameId) => {
     console.log('attachListenerForDeath');
     const ref = firebase.database().ref(`games/${gameId}/rounds/current/phase/subPhase`);
     ref.on('child_added', (childSnapshot, prevChildKey) => {
-      console.log(childSnapshot.key);
       // Listen to a new event : 'death'
       if (childSnapshot.key === 'death') {
         // Kill player
@@ -111,7 +109,7 @@ module.exports.killPlayer = (gameId, playerId) => {
   const ref = firebase.database().ref(`games/${gameId}/rounds/current`);
   return ref.once('value').then((currentRound) => {
     const refPlayer = firebase.database().ref(`games/${gameId}/players/${playerId}`);
-    refPlayer.update({
+    return refPlayer.update({
       status: 'DEAD',
       killedBy: currentRound.val().phase.subPhase.state,
       killedAt: `ROUND_${currentRound.val().number}`,
