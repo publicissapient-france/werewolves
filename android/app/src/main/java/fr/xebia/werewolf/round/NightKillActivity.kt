@@ -8,12 +8,13 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import fr.xebia.werewolf.R
 import fr.xebia.werewolf.firebaseDbRef
+import fr.xebia.werewolf.model.KillIntention
 import fr.xebia.werewolf.model.Player
 import fr.xebia.werewolf.model.Role
 import fr.xebia.werewolf.prefsUtil
 import kotlinx.android.synthetic.main.activity_night.*
 
-class NightKillActivity : AppCompatActivity() {
+class NightKillActivity : AppCompatActivity(), KillContract.View {
 
     private lateinit var playerAdapter: PlayerAdapter
 
@@ -21,8 +22,7 @@ class NightKillActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_night)
 
-        val gameId = prefsUtil.currentGameId
-        val playersRef = firebaseDbRef.child("games/$gameId/players")
+        val playersRef = firebaseDbRef.child("games/${prefsUtil.currentGameId}/players")
         playersRef.addValueEventListener(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError?) {
                 // void
@@ -32,7 +32,7 @@ class NightKillActivity : AppCompatActivity() {
                 val players = mutableListOf<Player>()
                 p0!!.children.mapTo(players) { it.getValue(Player::class.java) as Player }
                 players
-                        .filter { it.role == Role.WEREWOLF }
+                        .filter { it.role == Role.WEREWOLF || it.name == prefsUtil.currentPlayerName }
                         .forEach { players.remove(it) }
                 setupRecyclerView(players)
             }
@@ -40,7 +40,7 @@ class NightKillActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView(players: List<Player>) {
-        playerAdapter = PlayerAdapter(this)
+        playerAdapter = PlayerAdapter(this, this)
         val spanCount = 3
         val layoutManager = GridLayoutManager(this, spanCount)
         layoutManager.spanSizeLookup
@@ -48,5 +48,10 @@ class NightKillActivity : AppCompatActivity() {
         villagerRecyclerView.adapter = playerAdapter
 
         playerAdapter.setItems(players)
+    }
+
+    override fun selectPlayer(player: Player) {
+        val killRef = firebaseDbRef.child("games/${prefsUtil.currentGameId}/killIntentions")
+        killRef.child(prefsUtil.currentPlayerName).setValue(KillIntention(player.name))
     }
 }

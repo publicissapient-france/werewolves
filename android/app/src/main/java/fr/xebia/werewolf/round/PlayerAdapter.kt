@@ -8,14 +8,16 @@ import android.view.ViewGroup
 import fr.xebia.werewolf.R
 import fr.xebia.werewolf.model.Player
 
-class PlayerAdapter internal constructor(context: Context) : RecyclerView.Adapter<PlayerAdapter.ViewHolder>() {
+class PlayerAdapter internal constructor(context: Context, val parentView: KillContract.View)
+    : RecyclerView.Adapter<PlayerAdapter.ViewHolder>(), PlayerView.Delegate {
 
     private val layoutInflater: LayoutInflater = LayoutInflater.from(context)
     private var players: List<Player>? = ArrayList()
+    private var selectedPosition: Int = 0
 
     override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
         val player = players!![position]
-        (holder!!.itemView as PlayerView).bindData(player)
+        (holder!!.itemView as PlayerView).bindView(this, player, position == selectedPosition)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
@@ -30,8 +32,22 @@ class PlayerAdapter internal constructor(context: Context) : RecyclerView.Adapte
 
     fun setItems(players: List<Player>) {
         this.players = players
+        selectedPosition = randomIntInRange(0, players.size)
+
         notifyDataSetChanged()
     }
 
+    override fun selectPlayer(player: Player) {
+        notifyItemChanged(selectedPosition)
+        selectedPosition = players!!.indexOf(player)
+        notifyItemChanged(selectedPosition)
+
+        parentView.selectPlayer(player)
+    }
+
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v)
+
+    fun randomIntInRange(min: Int, max: Int): Int {
+        return (Math.floor(Math.random() * (max - min + 1)) + min).toInt()
+    }
 }
