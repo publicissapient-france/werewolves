@@ -7,7 +7,7 @@ module.exports.associateUserIdToGame = (userId, gameId) =>
   firebase.database().ref().child('devices').child(userId).set({
     startDate: moment().format(),
     gameId,
-    status: 'INITIAL',
+    status: 'INITIAL'
   });
 
 module.exports.getCurrentGame = (deviceId) =>
@@ -30,7 +30,7 @@ module.exports.createGame = (deviceId) => {
     status: 'INITIAL',
     players: {},
     deviceId,
-    roundNumber: 0,
+    roundNumber: 0
   };
   return firebase.database().ref().child('games').update(json).then(() => gameId);
 };
