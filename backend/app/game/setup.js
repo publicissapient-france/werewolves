@@ -13,7 +13,7 @@ module.exports.associateUserIdToGame = (userId, gameId) => {
   })
 };
 
-module.exports.getCurrentGame = (deviceId) => {
+module.exports.getCurrentGameByDeviceId = (deviceId) => {
   return firebase.database().ref(`devices/${deviceId}`).once('value').then((game) => {
     if (game && game.val()) {
       return game.val();
