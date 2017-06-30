@@ -3,7 +3,7 @@ const setup = require('./setup');
 const firebase = require('./../services/firebase').getFirebaseClient();
 
 module.exports.archiveCurrentRound = (gameId) => {
-  console.log('archiveCurrentRound');
+  console.log('= Archive Current Round');
   const ref = firebase.database().ref(`games/${gameId}`);
   return ref.child('rounds/current').once('value').then((currentRound) => {
     const roundNumber = currentRound.val().number;
@@ -15,7 +15,7 @@ module.exports.archiveCurrentRound = (gameId) => {
 };
 
 module.exports.archiveCurrentPhase = (gameId) => {
-  console.log('archiveCurrentPhase');
+  console.log('= Archive Current Phase');
   const refPhase = firebase.database().ref(`games/${gameId}/rounds/current`);
   return refPhase.child('phase').once('value').then((result) => {
     if (result) {
@@ -30,11 +30,11 @@ module.exports.archiveCurrentPhase = (gameId) => {
 };
 
 module.exports.createNewRound = (gameId) => {
-  console.log('createNewRound');
   const refGame = firebase.database().ref(`games/${gameId}`);
   return refGame.once('value')
   .then((game) => {
     const roundNumber = parseInt(game.val().roundNumber, 10) + 1;
+    console.log(`\n= Create New Round: ${roundNumber}`);
     return refGame.child('rounds').update({ current: { number: roundNumber } })
     .then(() =>
       refGame.update({ roundNumber })
@@ -46,7 +46,6 @@ module.exports.createNewRound = (gameId) => {
 };
 
 module.exports.createNewPhase = (gameId) => {
-  console.log('createNewPhase');
   const refPhase = firebase.database().ref(`games/${gameId}/rounds/current`);
   return refPhase.once('value').then((result) => {
     let json;
@@ -57,6 +56,7 @@ module.exports.createNewPhase = (gameId) => {
       // create NIGHT phase
       json = { state: 'NIGHT', subPhase: { state: 'WEREWOLVES_VOTE' } };
     }
+    console.log(`= Create New Phase: ${json.state} ${json.subPhase.state}`);
     return refPhase.update({ phase: json });
   });
 };
@@ -87,17 +87,20 @@ module.exports.stateMachine = (gameId) => {
 
 module.exports.attachListenerForDeath = (gameId) => {
   return new Promise((resolve, reject) => {
-    console.log('attachListenerForDeath');
+    // console.log('= Attach Listener For Death');
     const ref = firebase.database().ref(`games/${gameId}/rounds/current/phase/subPhase`);
     ref.on('child_added', (childSnapshot, prevChildKey) => {
       // Listen to a new event : 'death'
       if (childSnapshot.key === 'death') {
         // Kill player
-        this.killPlayer(gameId, childSnapshot.val());
-        // Remove listener on the specific node
-        ref.off('child_added');
-        // Advance to next phase
-        return resolve(this.stateMachine(gameId).then(() => this.attachListenerForDeath(gameId)));
+        this.killPlayer(gameId, childSnapshot.val())
+        .then(() => {
+          // Remove listener on the specific node
+          ref.off('child_added');
+          // Advance to next phase
+          return resolve(this.stateMachine(gameId).then(() => this.attachListenerForDeath(gameId)));
+        })
+        .catch(reject);
       }
       return resolve();
     });
@@ -105,24 +108,26 @@ module.exports.attachListenerForDeath = (gameId) => {
 };
 
 module.exports.killPlayer = (gameId, playerId) => {
-  console.log('killPlayer');
+  console.log(`= Kill Player: ${playerId}`);
   const ref = firebase.database().ref(`games/${gameId}/rounds/current`);
   return ref.once('value').then((currentRound) => {
     const refPlayer = firebase.database().ref(`games/${gameId}/players/${playerId}`);
+    const killedBy = currentRound.val().phase.subPhase.state;
     return refPlayer.update({
       status: 'DEAD',
-      killedBy: currentRound.val().phase.subPhase.state,
+      killedBy: killedBy,
       killedAt: `ROUND_${currentRound.val().number}`,
     });
   });
 };
 
 module.exports.waitForPlayersToBeReady = (gameId) => {
-  console.log('waitForPlayersToBeReady');
+  console.log('= Wait For Players To Be Ready');
   return firebase.database().ref(`games/${gameId}`).once('value').then((game) => {
     let nbPlayersToWaitFor = game.val().nbPlayers;
     firebase.database().ref(`games/${gameId}/players`).orderByChild('status').on('child_changed', (childSnapshot, prevChildKey) => {
       if (childSnapshot.val().status === 'READY') {
+        console.log(`= ${childSnapshot.val().name} (${childSnapshot.val().role}) is ready`);
         nbPlayersToWaitFor--;
         if (nbPlayersToWaitFor <= 0) {
           return this.stateMachine(gameId).then(() => {

@@ -1,6 +1,6 @@
 const cards = require('../rules/cards');
 const firebase = require('./../services/firebase').getFirebaseClient();
-
+const _ = require('lodash');
 const moment = require('moment');
 
 module.exports.associateUserIdToGame = (userId, gameId) =>
@@ -40,31 +40,22 @@ Array.prototype.randsplice = function randsplice() {
 };
 
 module.exports.getAllPlayers = (gameId) => {
-  console.log('gameSetup.getAllPlayers');
   return firebase.database().ref(`games/${gameId}/players`).once('value')
   .then((players) => {
     const allPlayers = [];
     for (const player in players.val()) {
       allPlayers.push(player);
     }
-    console.log('Return ', allPlayers);
     return allPlayers;
   });
 };
 
-
-Array.prototype.randsplice = function () {
-  const ri = Math.floor(Math.random() * this.length);
-  return this.splice(ri, 1);
-};
-
 module.exports.distributeRoles = gameId => this.getAllPlayers(gameId).then((players) => {
   const updates = [];
-  const roles = cards.distribution[players.length];
+  const roles = [...cards.distribution[players.length]];
   players.forEach((player) => {
     const role = roles.randsplice();
     updates.push(firebase.database().ref(`games/${gameId}/players/${player}`).update({ role: role.toString() }));
-    console.log(player, role);
   });
   updates.push(firebase.database().ref(`games/${gameId}`).update({ nbPlayers: players.length }));
   return Promise.all(updates);
