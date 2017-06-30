@@ -16,4 +16,5 @@
     <string name="werewolves_vote_prompt">Please kill a villager</string>
     <string name="btn_kill">Kill</string>
     <string name="btn_ready_to_play">Ready to Play</string>
+    <string name="sleep_during_night">Night falls, village sleeps...</string>
 </resources>

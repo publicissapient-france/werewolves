@@ -14,7 +14,8 @@ import fr.xebia.werewolf.R.string.waiting_for_role_prompt
 import fr.xebia.werewolf.model.PlayerState
 import fr.xebia.werewolf.model.Role
 import fr.xebia.werewolf.model.Round
-import fr.xebia.werewolf.round.NightActivity
+import fr.xebia.werewolf.round.NightKillActivity
+import fr.xebia.werewolf.round.NightSleepActivity
 import kotlinx.android.synthetic.main.activity_role.*
 
 class RoleActivity : AppCompatActivity() {
@@ -114,7 +115,14 @@ class RoleActivity : AppCompatActivity() {
             override fun onChildAdded(p0: DataSnapshot?, p1: String?) {
                 val currentRound = p0!!.getValue(Round::class.java)
                 if (currentRound!!.number == 1) {
-                    startActivity(Intent(this@RoleActivity, NightActivity::class.java))
+                    Log.d("WEREWOLF", prefsUtil.currentPlayerName)
+                    Log.d("WEREWOLF", prefsUtil.currentPlayerRole)
+                    if (prefsUtil.isWerewolf()) {
+                        startActivity(Intent(this@RoleActivity, NightKillActivity::class.java))
+                    }
+                    if (prefsUtil.isVillager()) {
+                        startActivity(Intent(this@RoleActivity, NightSleepActivity::class.java))
+                    }
                 }
             }
 

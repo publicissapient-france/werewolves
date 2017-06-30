@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import fr.xebia.werewolf.Constants.Companion.GAME_ID
 import fr.xebia.werewolf.Constants.Companion.PLAYER_NAME
 import fr.xebia.werewolf.Constants.Companion.PLAYER_ROLE
+import fr.xebia.werewolf.model.Role
 
 class PrefsUtil(context: Context) {
 
@@ -22,4 +23,18 @@ class PrefsUtil(context: Context) {
     var currentPlayerRole: String
         get() = prefs.getString(PLAYER_ROLE, "")
         set(value) = prefs.edit().putString(PLAYER_ROLE, value).apply()
+
+    fun isWerewolf(): Boolean {
+        return currentPlayerRole == Role.WEREWOLF.name
+    }
+
+    fun isVillager(): Boolean {
+        return currentPlayerRole == Role.VILLAGER.name
+    }
+
+    fun flush() {
+        currentGameId = ""
+        currentPlayerName = ""
+        currentPlayerRole = ""
+    }
 }

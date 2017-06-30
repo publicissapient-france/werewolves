@@ -1,77 +1,72 @@
-'use strict';
-
-const cards = require('./../rules/cards');
+const cards = require('../rules/cards');
 const firebase = require('./../services/firebase').getFirebaseClient();
 
 const moment = require('moment');
 
-module.exports.associateUserIdToGame = (userId, gameId) => {
-  return firebase.database().ref().child('devices').child(userId).set({
+module.exports.associateUserIdToGame = (userId, gameId) =>
+  firebase.database().ref().child('devices').child(userId).set({
     startDate: moment().format(),
-    gameId: gameId,
-    status: "INITIAL"
-  })
-};
+    gameId,
+    status: 'INITIAL',
+  });
 
-module.exports.getCurrentGameByDeviceId = (deviceId) => {
-  return firebase.database().ref(`devices/${deviceId}`).once('value').then((game) => {
+module.exports.getCurrentGame = (deviceId) =>
+  firebase.database().ref(`devices/${deviceId}`).once('value').then((game) => {
     if (game && game.val()) {
       return game.val();
     }
-    return null
-  })
-};
+    return null;
+  });
+
+
+module.exports.getGame = gameId =>
+  firebase.database().ref(`games/${gameId}`).once('value').then((game) => game.val());
 
 module.exports.createGame = (deviceId) => {
   const gameId = Math.floor(Math.random() * (9999 - 1000)) + 1000;
   const json = {};
   json[gameId] = {
     startDate: moment().format(),
-    status: "INITIAL",
+    status: 'INITIAL',
     players: {},
-    deviceId: deviceId,
-    roundNumber: 0
+    deviceId,
+    roundNumber: 0,
   };
-  return firebase.database().ref().child('games').update(json).then(() => {
-    return gameId;
-  })
+  return firebase.database().ref().child('games').update(json).then(() => gameId);
 };
 
 Array.prototype.randsplice = function randsplice() {
   const ri = Math.floor(Math.random() * this.length);
-  const rs = this.splice(ri, 1);
-  return rs;
+  return this.splice(ri, 1);
 };
 
 module.exports.getAllPlayers = (gameId) => {
-  console.log("gameSetup.getAllPlayers");
-  return firebase.database().ref(`games/${gameId}/players`).once('value').then((players) => {
-    const allPlayers = [];
-    for (var player in players.val()) {
-      allPlayers.push(player)
-    }
-    console.log("Return ", allPlayers);
-    return allPlayers;
-  })
+  console.log('gameSetup.getAllPlayers');
+  return firebase.database().ref(`games/${gameId}/players`).once('value')
+    .then((players) => {
+      const allPlayers = [];
+      for (const player in players.val()) {
+        allPlayers.push(player);
+      }
+      console.log('Return ', allPlayers);
+      return allPlayers;
+    });
 };
 
 
 Array.prototype.randsplice = function () {
-  var ri = Math.floor(Math.random() * this.length);
-  var rs = this.splice(ri, 1);
-  return rs;
+  const ri = Math.floor(Math.random() * this.length);
+  return this.splice(ri, 1);
 };
 
-module.exports.distributeRoles = (gameId) => {
-  return this.getAllPlayers(gameId).then((players) => {
-    const updates = [];
-    const roles = cards.distribution[players.length];
-    players.forEach((player) => {
-      const role = roles.randsplice();
-      updates.push(firebase.database().ref(`games/${gameId}/players/${player}`).update({role: role.toString()}));
-      console.log(player, role)
-    });
-    updates.push(firebase.database().ref(`games/${gameId}`).update({nbPlayers: players.length}))
-    return Promise.all(updates)
+module.exports.distributeRoles = gameId => this.getAllPlayers(gameId).then((players) => {
+  const updates = [];
+  const roles = cards.distribution[players.length];
+  players.forEach((player) => {
+    const role = roles.randsplice();
+    updates.push(firebase.database().ref(`games/${gameId}/players/${player}`).update({role: role.toString()}));
+    console.log(player, role);
   });
-};
+  updates.push(firebase.database().ref(`games/${gameId}`).update({nbPlayers: players.length}));
+  return Promise.all(updates);
+});
