@@ -100,9 +100,9 @@ describe('Games', () => {
   after(function () {
     gamesToDelete.forEach((gameId) => {
       firebase.database().ref().child(`games/${gameId}`).remove()
-    })
-    firebase.database().ref().child(`devices/test_1`).remove()
-    firebase.database().ref().child(`devices/test_2`).remove()
+    });
+    firebase.database().ref().child(`devices/test_1`).remove();
+    firebase.database().ref().child(`devices/test_2`).remove();
   });
 
 
