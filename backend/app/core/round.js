@@ -12,7 +12,7 @@ class Round {
   }
 
   refRound(number) {
-    return firebase.database().ref(`games/${this.id}/rounds/${number}`);
+    return firebase.database().ref(`games/${this.gameId}/rounds/${number}`);
   }
 
   createNextPhase() {
