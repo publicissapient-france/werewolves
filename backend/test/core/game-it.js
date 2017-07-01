@@ -23,10 +23,14 @@ const assertWon = (game, done, status) => {
 };
 
 describe('Game', () => {
+
+  const gamesToDelete = [];
+
   it('Villagers should win !', (done) => {
-    const deviceId = '3';
+    const deviceId = 'test_1';
     new Game(deviceId).start()
     .then((game) => {
+      gamesToDelete.push(game.id);
       console.log(`= Game: ${game.id}`);
       return game.associateUserIdToGame()
       .then(() => Game.loadByDeviceId(deviceId))
@@ -54,9 +58,10 @@ describe('Game', () => {
   });
 
   it('Werewolves should win !', (done) => {
-    const deviceId = '1';
+    const deviceId = 'test_2';
     new Game(deviceId).start()
     .then((game) => {
+      gamesToDelete.push(game.id);
       console.log(`= Game: ${game.id}`);
       return game.associateUserIdToGame()
       .then(() => Game.loadByDeviceId(deviceId))
@@ -81,5 +86,11 @@ describe('Game', () => {
       })
       .catch(done);
     });
+  });
+
+  after(() => {
+    gamesToDelete.forEach(gameId => firebase.database().ref().child(`games/${gameId}`).remove())
+    firebase.database().ref().child(`devices/test_1`).remove();
+    firebase.database().ref().child(`devices/test_2`).remove();
   });
 });
