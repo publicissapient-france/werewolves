@@ -30,8 +30,10 @@
     "wait-until": "0.0.2"
   },
   "scripts": {
-    "test": "./node_modules/istanbul/lib/cli.js --include-all-sources cover ./node_modules/mocha/bin/_mocha -- --recursive --timeout 30000 -R spec test",
-    "posttest": "./node_modules/istanbul/lib/cli.js report clover",
+    "coverage": "./node_modules/istanbul/lib/cli.js --include-all-sources cover ./node_modules/mocha/bin/_mocha -- --recursive --timeout 30000 -R spec test",
+    "postcoverage": "./node_modules/istanbul/lib/cli.js report clover",
+
+    "test": "mocha --recursive --timeout 30000 test",
     "redis": "docker run -d -p 6379:6379 redis",
     "start": "nodemon app/index.js",
     "lint": "eslint app"

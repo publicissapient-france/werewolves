@@ -17,6 +17,7 @@ rules :
     - off
   no-extend-native:
     - off
-  indent: ["error", 2]
   no-plusplus:
     - off
+  max-len: ["warn", 160]
+  indent: ["off"]

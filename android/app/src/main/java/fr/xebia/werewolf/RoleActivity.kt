@@ -115,8 +115,6 @@ class RoleActivity : AppCompatActivity() {
             override fun onChildAdded(p0: DataSnapshot?, p1: String?) {
                 val currentRound = p0!!.getValue(Round::class.java)
                 if (currentRound!!.number == 1) {
-                    Log.d("WEREWOLF", prefsUtil.currentPlayerName)
-                    Log.d("WEREWOLF", prefsUtil.currentPlayerRole)
                     if (prefsUtil.isWerewolf()) {
                         startActivity(Intent(this@RoleActivity, NightKillActivity::class.java))
                     }

@@ -33,8 +33,11 @@ class PlayerAdapter internal constructor(context: Context, val parentView: KillC
     fun setItems(players: List<Player>) {
         this.players = players
         selectedPosition = randomIntInRange(0, players.size)
-
         notifyDataSetChanged()
+    }
+
+    fun updateKillIntention(wantToKill: String) {
+        // TODO display other werewolf's kill intention
     }
 
     override fun selectPlayer(player: Player) {

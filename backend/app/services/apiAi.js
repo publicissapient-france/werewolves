@@ -1,5 +1,4 @@
-const gameSetup = require('../game/setup');
-const rounds = require('../game/rounds');
+const Game = require('../core/game');
 
 module.exports.apiAiActionMap = new Map();
 
@@ -24,7 +23,7 @@ const buildMessageFromApiAiUnchanged = (messages) => {
 const resumeApp = (assistant) => {
   console.log('Welcome action');
   console.log('User id', assistant.body_.originalRequest.data.user.userId);
-  gameSetup.getCurrentGame(assistant.body_.originalRequest.data.user.userId).then((game) => {
+  Game.loadByDeviceId(assistant.body_.originalRequest.data.user.userId).then((game) => {
     if (game && game.gameId && game.status !== 'END') {
       assistant.ask(`Resuming message : game status is ${game.status}`);
     } else {
@@ -36,7 +35,8 @@ const resumeApp = (assistant) => {
 
 const createGame = (assistant) => {
   console.log('Creating game');
-  gameSetup.createGame(assistant.body_.originalRequest.data.user.userId).then((id) => {
+  new Game(assistant.body_.originalRequest.data.user.userId).start().then((game) => {
+    const id = game.id;
     console.log('Game id is', id);
 
     let message = startMessage();
@@ -51,25 +51,25 @@ const createGame = (assistant) => {
     message = endMessage(message);
     console.log(`Game id is ${id}`);
 
-    gameSetup.associateUserIdToGame(assistant.body_.originalRequest.data.user.userId, id);
+    game.associateUserIdToGame(assistant.body_.originalRequest.data.user.userId);
     assistant.tell(message);
   });
 };
 
 const startGame = (assistant) => {
-  gameSetup.getCurrentGame(assistant.body_.originalRequest.data.user.userId).then((game) => {
+  Game.loadByDeviceId(assistant.body_.originalRequest.data.user.userId).then((game) => {
     const gameId = game.gameId;
     console.log(`Display all players name for ${gameId}`);
 
-    const players = gameSetup.getAllPlayers(gameId).then((players) => {
+    game.getAllPlayers().then((players) => {
       let message = startMessage();
 
-      message = addSpeechToMessage(message, assistant.body_.result.fulfillment.messages[0].textToSpeech.replace("$playersLength", players.length));
+      message = addSpeechToMessage(message, assistant.body_.result.fulfillment.messages[0].textToSpeech.replace('$playersLength', players.length));
       console.log(`Adding players : ${message}`);
 
       players.forEach((player) => {
         console.log('Handling ', player);
-        message = addSpeechToMessage(message, player + '<break time="1" />');
+        message = addSpeechToMessage(message, `${player}<break time="1" />`);
       });
       message = addSpeechToMessage(message, assistant.body_.result.fulfillment.messages[1].textToSpeech);
       message = endMessage(message);
@@ -81,8 +81,8 @@ const startGame = (assistant) => {
 
 const startGameIsConfirmed = (assistant) => {
   console.log('START_GAME_CONFIRMED');
-  gameSetup.getCurrentGame(assistant.body_.originalRequest.data.user.userId).then((game) => {
-    gameSetup.distributeRoles(game.gameId);
+  Game.loadByDeviceId(assistant.body_.originalRequest.data.user.userId).then((game) => {
+    game.distributeRoles();
 
     let message = startMessage();
     message = addSpeechToMessage(message, assistant.body_.result.fulfillment.messages[0].textToSpeech);
@@ -92,7 +92,7 @@ const startGameIsConfirmed = (assistant) => {
 
     message = endMessage(message);
 
-    rounds.waitForPlayersToBeReady(game.gameId);
+    game.waitForPlayersToBeReady();
 
     assistant.tell(message);
   });

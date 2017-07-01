@@ -5,22 +5,29 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import fr.xebia.werewolf.R
 import fr.xebia.werewolf.firebaseDbRef
 import fr.xebia.werewolf.model.KillIntention
 import fr.xebia.werewolf.model.Player
+import fr.xebia.werewolf.model.PlayerState
 import fr.xebia.werewolf.model.Role
 import fr.xebia.werewolf.prefsUtil
-import kotlinx.android.synthetic.main.activity_night.*
+import kotlinx.android.synthetic.main.activity_night_kill.*
 
 class NightKillActivity : AppCompatActivity(), KillContract.View {
 
     private lateinit var playerAdapter: PlayerAdapter
+    private lateinit var killIntentionsRef: DatabaseReference
+    private lateinit var playerToKill: Player
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_night)
+        setContentView(R.layout.activity_night_kill)
+
+        // init kill intention as a werewolf
+        initKillIntention()
 
         val playersRef = firebaseDbRef.child("games/${prefsUtil.currentGameId}/players")
         playersRef.addValueEventListener(object : ValueEventListener {
@@ -32,11 +39,41 @@ class NightKillActivity : AppCompatActivity(), KillContract.View {
                 val players = mutableListOf<Player>()
                 p0!!.children.mapTo(players) { it.getValue(Player::class.java) as Player }
                 players
-                        .filter { it.role == Role.WEREWOLF || it.name == prefsUtil.currentPlayerName }
+                        .filter {
+                            it.role == Role.WEREWOLF
+                                    || it.status == PlayerState.DEAD
+                        }
                         .forEach { players.remove(it) }
                 setupRecyclerView(players)
             }
         })
+
+        killIntentionsRef.addValueEventListener(object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError?) {
+
+            }
+
+            override fun onDataChange(p0: DataSnapshot?) {
+                val killIntentions = mutableListOf<KillIntention>()
+                var canKill = false
+                p0!!.children.mapTo(killIntentions) {
+                    it.getValue(KillIntention::class.java) as KillIntention
+                }
+                // check if kill intentions are unanimous
+                if (killIntentions.filter { it.wantToKill.isNotEmpty() }.isNotEmpty()) {
+                    if (killIntentions.distinct().size == 1) {
+                        canKill = true
+                    }
+                }
+                buttonKillVillager.isEnabled = canKill
+            }
+        })
+        buttonKillVillager.setOnClickListener {
+            val subPhaseRef = firebaseDbRef.child("games/${prefsUtil.currentGameId}/rounds/current/phase/subPhase")
+            subPhaseRef.child("death").setValue(playerToKill.name)
+
+            // TODO transition to day screen
+        }
     }
 
     private fun setupRecyclerView(players: List<Player>) {
@@ -50,8 +87,13 @@ class NightKillActivity : AppCompatActivity(), KillContract.View {
         playerAdapter.setItems(players)
     }
 
+    fun initKillIntention() {
+        killIntentionsRef = firebaseDbRef.child("games/${prefsUtil.currentGameId}/killIntentions")
+        killIntentionsRef.child(prefsUtil.currentPlayerName).setValue(KillIntention())
+    }
+
     override fun selectPlayer(player: Player) {
-        val killRef = firebaseDbRef.child("games/${prefsUtil.currentGameId}/killIntentions")
-        killRef.child(prefsUtil.currentPlayerName).setValue(KillIntention(player.name))
+        playerToKill = player
+        killIntentionsRef.child(prefsUtil.currentPlayerName).setValue(KillIntention(player.name))
     }
 }

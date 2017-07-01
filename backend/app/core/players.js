@@ -1,25 +1,7 @@
 const _ = require('lodash');
-
-class Player {
-  constructor(data) {
-    Object.assign(this, data);
-  }
-
-  hasRole(role) {
-    return this.role === role;
-  }
-
-  isVillager() {
-    return this.hasRole('VILLAGER');
-  }
-
-  isWerewolf() {
-    return this.hasRole('WEREWOLF');
-  }
-}
+const Player = require('./player');
 
 class Players {
-
   constructor(players) {
     this.players = _(players).map(p => new Player(p)).value();
   }
@@ -31,6 +13,7 @@ class Players {
     if (this.getWerewolves().length === 0) {
       return 'VILLAGERS_VICTORY';
     }
+    return undefined;
   }
 
   getWerewolves() {
