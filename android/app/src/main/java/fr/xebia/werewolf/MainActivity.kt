@@ -15,4 +15,9 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, GameActivity::class.java))
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        prefsUtil.flush()
+    }
 }

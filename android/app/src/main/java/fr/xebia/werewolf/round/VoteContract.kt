@@ -2,7 +2,7 @@ package fr.xebia.werewolf.round
 
 import fr.xebia.werewolf.model.Player
 
-interface KillContract {
+interface VoteContract {
 
     interface View {
 

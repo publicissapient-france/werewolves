@@ -1,5 +1,6 @@
 package fr.xebia.werewolf.round
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
@@ -16,7 +17,7 @@ import fr.xebia.werewolf.model.Role
 import fr.xebia.werewolf.prefsUtil
 import kotlinx.android.synthetic.main.activity_night_kill.*
 
-class NightKillActivity : AppCompatActivity(), KillContract.View {
+class NightKillActivity : AppCompatActivity(), VoteContract.View {
 
     private lateinit var playerAdapter: PlayerAdapter
     private lateinit var killIntentionsRef: DatabaseReference
@@ -68,11 +69,12 @@ class NightKillActivity : AppCompatActivity(), KillContract.View {
                 buttonKillVillager.isEnabled = canKill
             }
         })
+        // transition to night sleep till the death is annonced
         buttonKillVillager.setOnClickListener {
             val subPhaseRef = firebaseDbRef.child("games/${prefsUtil.currentGameId}/rounds/current/phase/subPhase")
             subPhaseRef.child("death").setValue(playerToKill.name)
-
-            // TODO transition to day screen
+            startActivity(Intent(this@NightKillActivity, NightSleepActivity::class.java))
+            finish()
         }
     }
 

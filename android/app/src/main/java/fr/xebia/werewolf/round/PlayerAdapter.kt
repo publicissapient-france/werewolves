@@ -8,12 +8,12 @@ import android.view.ViewGroup
 import fr.xebia.werewolf.R
 import fr.xebia.werewolf.model.Player
 
-class PlayerAdapter internal constructor(context: Context, val parentView: KillContract.View)
+class PlayerAdapter internal constructor(context: Context, val parentView: VoteContract.View)
     : RecyclerView.Adapter<PlayerAdapter.ViewHolder>(), PlayerView.Delegate {
 
     private val layoutInflater: LayoutInflater = LayoutInflater.from(context)
     private var players: List<Player>? = ArrayList()
-    private var selectedPosition: Int = 0
+    private var selectedPosition: Int = -1
 
     override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
         val player = players!![position]

@@ -36,7 +36,7 @@ class RoleActivity : AppCompatActivity() {
         currentPlayerRef = firebaseDbRef.child("games/$gameId/players/$playerName")
         roleWaitingPrompt.text = String.format(getString(waiting_for_role_prompt), playerName)
 
-        roleCard.setOnTouchListener { view, motionEvent ->
+        roleCard.setOnTouchListener { _, motionEvent ->
             when (motionEvent.action) {
                 ACTION_DOWN -> {
                     when (givenRole) {
@@ -117,9 +117,11 @@ class RoleActivity : AppCompatActivity() {
                 if (currentRound!!.number == 1) {
                     if (prefsUtil.isWerewolf()) {
                         startActivity(Intent(this@RoleActivity, NightKillActivity::class.java))
+                        finish()
                     }
                     if (prefsUtil.isVillager()) {
                         startActivity(Intent(this@RoleActivity, NightSleepActivity::class.java))
+                        finish()
                     }
                 }
             }

@@ -17,4 +17,7 @@
     <string name="btn_kill">Kill</string>
     <string name="btn_ready_to_play">Ready to Play</string>
     <string name="sleep_during_night">Night falls, village sleeps...</string>
+    <string name="player_vote_prompt">Player vote one player</string>
+    <string name="btn_vote">Vote</string>
+    <string name="player_voted_prompt">Thanks for the wait, please wait for others...</string>
 </resources>

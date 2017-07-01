@@ -39,9 +39,11 @@ class PlayerInfoActivity : AppCompatActivity() {
                         if (p0!!.exists()) {
                             Toast.makeText(this@PlayerInfoActivity, R.string.error_play_name_taken, Toast.LENGTH_LONG).show()
                         } else {
+                            // TODO only allow player join when game status is INITIAL
                             playerRef.setValue(player).addOnCompleteListener {
                                 prefsUtil.currentPlayerName = playerName
                                 startActivity(Intent(this@PlayerInfoActivity, RoleActivity::class.java))
+                                finish()
                             }
                         }
                     }
