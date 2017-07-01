@@ -23,7 +23,8 @@
         <activity android:name=".PlayerInfoActivity" />
         <activity android:name=".RoleActivity" />
         <activity android:name=".round.NightKillActivity" />
-        <activity android:name=".round.NightSleepActivity"></activity>
+        <activity android:name=".round.NightSleepActivity" />
+        <activity android:name=".round.DayActivity" />
     </application>
 
 </manifest>
