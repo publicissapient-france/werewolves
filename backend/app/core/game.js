@@ -131,7 +131,7 @@ class Game {
   advanceToNextPhase() {
     return this.refGame().once('value').then((game) => {
       if (game.val().rounds) {
-        return this.currentRound().currentRound().archiveCurrentPhase().then(() =>
+        return this.currentRound().archiveCurrentPhase().then(() =>
           this.checkEndConditions().then((endMessage) => {
             if (endMessage) {
               return this.currentRound().archive()
