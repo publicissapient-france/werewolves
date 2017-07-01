@@ -17,14 +17,16 @@ class Round {
 
   createNextPhase() {
     if (this.NIGHT) {
-      return new Phase({ state: 'DAY', subPhase: { state: 'VILLAGERS_VOTE' } });
+      return new Phase({ state: 'DAY', subPhase: { state: 'VILLAGERS_VOTE'} });
     }
     return new Phase({ state: 'NIGHT', subPhase: { state: 'WEREWOLVES_VOTE' } });
   }
 
   createNewPhase() {
     return this.refCurrentRound().once('value')
-    .then(result => this.refCurrentRound().update({ phase: new Round(result.val()).createNextPhase() }));
+    .then(result => {
+      return this.refCurrentRound().update({ phase: new Round(result.val()).createNextPhase() })
+    });
   }
 
   killPlayer(playerId) {

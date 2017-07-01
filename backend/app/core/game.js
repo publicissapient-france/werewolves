@@ -3,6 +3,7 @@ const firebase = require('../services/firebase').getFirebaseClient();
 const _ = require('lodash');
 const moment = require('moment');
 const Player = require('./player');
+const Votes = require('./votes');
 const Players = require('./players');
 const Round = require('./round');
 const Phase = require('./phase');
@@ -28,7 +29,7 @@ class Game {
       roundNumber: 0,
     };
     return firebase.database().ref().child('games').update(json)
-    .then(() => this);
+      .then(() => this);
   }
 
   static loadByDeviceId(deviceId) {
@@ -41,24 +42,24 @@ class Game {
 
   associateUserIdToGame() {
     return firebase.database().ref().child('devices').child(this.deviceId)
-    .set({
-      startDate: moment().format(),
-      gameId: this.id,
-      status: 'INITIAL',
-    });
+      .set({
+        startDate: moment().format(),
+        gameId: this.id,
+        status: 'INITIAL',
+      });
   }
 
   createPlayer(name) {
     return firebase.database().ref().child(`games/${this.id}/players/${name}`)
-    .update(new Player({
-      deviceId: this.deviceId,
-      name,
-    }));
+      .update(new Player({
+        deviceId: this.deviceId,
+        name,
+      }));
   }
 
   getAllPlayers() {
     return this.refPlayers().once('value')
-    .then(players => _.keys(players.val()));
+      .then(players => _.keys(players.val()));
   }
 
   refPlayers() {
@@ -81,22 +82,26 @@ class Game {
     return firebase.database().ref(`games/${this.id}/rounds/current/phase/subPhase`);
   }
 
+  refCurrentVotes() {
+    return firebase.database().ref(`games/${this.id}/rounds/current/phase/subPhase/votes`);
+  }
+
   distributeRoles() {
     return this.getAllPlayers()
-    .then((players) => {
-      const roles = [...cards.distribution[players.length]];
-      return Promise.mapSeries(players, player =>
-        this.assignRole(player, roles.pickRandom().toString()))
-      .then(() => this.updatePlayerCount(players.length));
-    });
+      .then((players) => {
+        const roles = [...cards.distribution[players.length]];
+        return Promise.mapSeries(players, player =>
+            this.assignRole(player, roles.pickRandom().toString()))
+          .then(() => this.updatePlayerCount(players.length));
+      });
   }
 
   updatePlayerCount(nbPlayers) {
-    return this.refGame().update({ nbPlayers });
+    return this.refGame().update({nbPlayers});
   }
 
   assignRole(player, role) {
-    return new Player({ id: player, gameId: this.id }).assignRole(role);
+    return new Player({id: player, gameId: this.id}).assignRole(role);
   }
 
   waitForPlayersToBeReady() {
@@ -119,13 +124,13 @@ class Game {
 
   begin() {
     return this.advanceToNextPhase()
-    .then(() => this.refPlayers().off())
-    .then(() => this.attachListenerForDeath())
-    .then(() => Promise.mapSeries(this.getAllPlayers(), playerName => this.player(playerName).setAlive()));
+      .then(() => this.refPlayers().off())
+      .then(() => Promise.mapSeries(this.getAllPlayers(), playerName => this.player(playerName).setAlive()))
+      .then(() => this.attachListenerForVotes());
   }
 
   player(name) {
-    return new Player({ id: name, gameId: this.id });
+    return new Player({id: name, gameId: this.id});
   }
 
   advanceToNextPhase() {
@@ -135,58 +140,93 @@ class Game {
           this.checkEndConditions().then((endMessage) => {
             if (endMessage) {
               return this.currentRound().archive()
-              .then(() => this.refGame().update({ status: endMessage })
-              .then(() => this.refDevice().update({ status: endMessage })));
+                .then(() => this.refGame().update({status: endMessage})
+                  .then(() => this.refDevice().update({status: endMessage})));
             }
             const currentPhase = new Phase(game.val().rounds.current.phase);
             if (currentPhase.isDay()) {
               return this.currentRound().archive()
-              .then(() => this.createNewRound())
-              .then(round => round.createNewPhase());
+                .then(() => this.createNewRound())
+                .then(round => round.createNewPhase());
             }
             return this.createNewPhase();
           }));
       }
       return this.createNewRound()
-      .then(() => this.createNewPhase());
+        .then(() => this.createNewPhase());
     });
   }
 
   currentRound() {
-    return new Round({ gameId: this.id });
+    return new Round({gameId: this.id});
   }
 
   createNewRound() {
     return this.refGame().once('value')
-    .then((game) => {
-      const roundNumber = parseInt(game.val().roundNumber, 10) + 1;
-      console.log(`\n= Create New Round: ${roundNumber}`);
-      return this.refGame().child('rounds').update({ current: { number: roundNumber } })
-      .then(() => this.refGame().update({ roundNumber, status: `ROUND_${roundNumber}` })
-      .then(() => this.refDevice().update({ status: `ROUND_${roundNumber}` })))
-      .then(() => this.currentRound());
-    });
+      .then((game) => {
+        const roundNumber = parseInt(game.val().roundNumber, 10) + 1;
+        console.log(`\n= Create New Round: ${roundNumber}`);
+        return this.refGame().child('rounds').update({current: {number: roundNumber}})
+          .then(() => this.refGame().update({roundNumber, status: `ROUND_${roundNumber}`})
+            .then(() => this.refDevice().update({status: `ROUND_${roundNumber}`})))
+          .then(() => this.currentRound());
+      });
   }
 
   createNewPhase() {
     return this.refCurrentRound().once('value')
-    .then(result => this.refCurrentRound().update({ phase: new Round(result.val()).createNextPhase() }));
+      .then(result => this.refCurrentRound().update({phase: new Round(result.val()).createNextPhase()}));
   }
 
   attachListenerForDeath() {
-    return new Promise((resolve, reject) => this.refCurrentSubPhase().on('child_added', this.onVote(resolve, reject)));
+    return new Promise((resolve, reject) => this.refCurrentSubPhase().on('child_added', this.onDeath(resolve, reject)));
   }
 
-  onVote(resolve, reject) {
+  attachListenerForVotes() {
+    return new Promise((resolve, reject) => this.refCurrentSubPhase().on('child_added', this.onVotes(resolve, reject)));
+  }
+
+  attachListenerForWerewolvesVote() {
+    return new Promise((resolve, reject) => this.refCurrentVotes().on('child_added', this.onWerewolvesVote(resolve, reject)));
+  }
+
+  // TO_BE_REVIEWED @jsmadja
+  onVotes(resolve, reject) {
+    return (childSnapshot) => {
+      if (childSnapshot.key === 'votes') {
+        // Move reference
+        this.refCurrentVotes().off();
+        // TODO indirection between Wolves and Villagers votes.
+        return resolve(this.attachListenerForWerewolvesVote())
+      }
+    };
+  }
+
+  onWerewolvesVote(resolve, reject) {
+    return (childSnapshot) => {
+      if (childSnapshot.hasChild('voted')) {
+        console.log("***", childSnapshot.child('voted').val())
+        this.refGame().once('value').then((result) => {
+          const votes = new Votes(result.val().rounds.current.phase.subPhase.votes)
+          const players = new Players(result.val().players)
+          console.log(votes.countVotes(), players.getWerewolvesCount());
+          votes.getMajority()
+        });
+        return resolve();
+      }
+    };
+  }
+
+  onDeath(resolve, reject) {
     return (childSnapshot) => {
       if (childSnapshot.key === 'death') {
         const playerId = childSnapshot.val();
         this.killPlayer(playerId)
-        .then(() => {
-          this.refCurrentSubPhase().off('child_added');
-          return resolve(this.advanceToNextPhase().then(() => this.attachListenerForDeath()));
-        })
-        .catch(reject);
+          .then(() => {
+            this.refCurrentSubPhase().off('child_added');
+            return resolve(this.advanceToNextPhase().then(() => this.attachListenerForDeath()));
+          })
+          .catch(reject);
       }
       return resolve();
     };
@@ -198,7 +238,7 @@ class Game {
 
   checkEndConditions() {
     return this.refPlayers().orderByChild('status').equalTo('ALIVE').once('value')
-    .then(result => new Players(result.val()).getWinners());
+      .then(result => new Players(result.val()).getWinners());
   }
 }
 

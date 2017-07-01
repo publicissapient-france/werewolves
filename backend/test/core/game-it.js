@@ -48,16 +48,19 @@ describe('Game', () => {
           .then(() => firebase.database().ref().child(`games/${game.id}/players/michael_`).update({status: 'READY'}))
           .then(() => firebase.database().ref().child(`games/${game.id}/players/julien_`).update({status: 'READY'}))
           .then(() => {
-            setTimeout(() => Game.loadById(game.id).then(_game => kill(game.id, _game.players, 'WEREWOLF')), 2000);
-            setTimeout(() => Game.loadById(game.id).then(_game => kill(game.id, _game.players, 'WEREWOLF')), 4000);
-            setTimeout(() => Game.loadById(game.id).then(_game => kill(game.id, _game.players, 'VILLAGER')), 6000);
-            setTimeout(() => Game.loadById(game.id).then(_game => assertWon(_game, done, 'VILLAGERS_VICTORY')), 8000);
+            setTimeout(() => firebase.database().ref().child(`games/${game.id}/rounds/current/phase/subPhase/votes/qian_`).set({voted: "benjamin_"}), 2000);
+            setTimeout(() => firebase.database().ref().child(`games/${game.id}/rounds/current/phase/subPhase/votes/pablo_`).set({voted: "benjamin_"}), 3000);
+            setTimeout(() => firebase.database().ref().child(`games/${game.id}/rounds/current/phase/subPhase/votes/benjamin_`).set({voted: "pablo_"}), 4000);
+            setTimeout(() => firebase.database().ref().child(`games/${game.id}/rounds/current/phase/subPhase/votes/julien_`).set({voted: "pablo_"}), 5000);
+
+            //setTimeout(() => Game.loadById(game.id).then(_game => kill(game.id, _game.players, 'VILLAGER')), 2200);
+            //setTimeout(() => Game.loadById(game.id).then(_game => assertWon(_game, done, 'VILLAGERS_VICTORY')), 8000);
           })
           .catch(done);
       });
   });
 
-  it('Werewolves should win !', (done) => {
+  /*it('Werewolves should win !', (done) => {
     const deviceId = 'test_2';
     new Game(deviceId).start()
       .then((game) => {
@@ -87,9 +90,9 @@ describe('Game', () => {
           })
           .catch(done);
       });
-  });
+  });*/
 
-  after(() => {
+  /*after(() => {
     const promises = []
     gamesToDelete.forEach(
       gameId => promises.push(firebase.database().ref().child(`games/${gameId}`).remove())
@@ -97,5 +100,5 @@ describe('Game', () => {
     promises.push(firebase.database().ref().child(`devices/test_1`).remove());
     promises.push(firebase.database().ref().child(`devices/test_2`).remove());
     return Promise.all(promises);
-  });
+  });*/
 });

@@ -23,6 +23,14 @@ class Players {
   getVillagers() {
     return _(this.players).filter(player => player.isVillager()).value();
   }
+
+  getAliveCount() {
+    return _(this.players).length
+  }
+
+  getWerewolvesCount() {
+    return _(this.players).filter(player => player.isWerewolf()).value().length;
+  }
 }
 
 module.exports = Players;
