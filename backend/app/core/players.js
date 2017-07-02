@@ -18,8 +18,8 @@ class Players {
     return _(this.players).filter(player => player.isAlive()).value().length;
   }
 
-  getWerewolvesCount() {
-    return _(this.players).filter(player => player.isWerewolf()).value().length;
+  getAliveWerewolvesCount() {
+    return _(this.players).filter(player => player.isAliveWerewolf()).value().length;
   }
 }
 

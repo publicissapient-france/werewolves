@@ -1,7 +1,7 @@
 const firebase = require('../services/firebase').getFirebaseClient();
 
 class Player {
-  constructor(data = { name: '', deviceId: '', gameId: '' }) {
+  constructor(data = {name: '', deviceId: '', gameId: ''}) {
     Object.assign(this, data);
   }
 
@@ -17,6 +17,10 @@ class Player {
     return this.hasRole('WEREWOLF');
   }
 
+  isAliveWerewolf() {
+    return this.isWerewolf() && this.isAlive();
+  }
+
   isReady() {
     return this.status === 'READY';
   }
@@ -26,21 +30,21 @@ class Player {
   }
 
   setAlive() {
-    return firebase.database().ref(`games/${this.gameId}/players/${this.id}`).update({ status: 'ALIVE' });
+    return firebase.database().ref(`games/${this.gameId}/players/${this.id}`).update({status: 'ALIVE'});
   }
 
   kill(killedBy, killedAt) {
     console.log(`= ${this.id} killed by ${killedBy} on ${killedAt}`);
     return firebase.database().ref(`games/${this.gameId}/players/${this.id}`)
-    .update({
-      status: 'DEAD',
-      killedBy,
-      killedAt,
-    });
+      .update({
+        status: 'DEAD',
+        killedBy,
+        killedAt,
+      });
   }
 
   assignRole(role) {
-    return firebase.database().ref(`games/${this.gameId}/players/${this.id}`).update({ role });
+    return firebase.database().ref(`games/${this.gameId}/players/${this.id}`).update({role});
   }
 }
 

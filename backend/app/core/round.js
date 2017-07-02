@@ -11,27 +11,27 @@ class Round {
   createNextPhase() {
     if (this.NIGHT) {
       console.log('= Create New Phase DAY');
-      return new Phase({ state: 'DAY', subPhase: { state: 'VILLAGERS_VOTE' } });
+      return new Phase({state: 'DAY', subPhase: {state: 'VILLAGERS_VOTE'}});
     }
     console.log('= Create New Phase NIGHT');
-    return new Phase({ state: 'NIGHT', subPhase: { state: 'WEREWOLVES_VOTE' } });
+    return new Phase({state: 'NIGHT', subPhase: {state: 'WEREWOLVES_VOTE'}});
   }
 
   createNewPhase() {
     return repository.getCurrentRound(this.gameId)
-    .then(result => repository.updateCurrentRound(this.gameId, { phase: new Round(result.val()).createNextPhase() }));
+      .then(result => repository.updateCurrentRound(this.gameId, {phase: new Round(result.val()).createNextPhase()}));
   }
 
   killPlayer(playerId) {
     return repository.getCurrentRound(this.gameId)
-    .then((currentRound) => {
-      const killedBy = currentRound.val().phase.subPhase.state;
-      const killedAt = `ROUND_${currentRound.val().number}`;
-      return new Player({
-        id: playerId,
-        gameId: this.gameId,
-      }).kill(killedBy, killedAt);
-    });
+      .then((currentRound) => {
+        const killedBy = currentRound.val().phase.subPhase.state;
+        const killedAt = `ROUND_${currentRound.val().number}`;
+        return new Player({
+          id: playerId,
+          gameId: this.gameId,
+        }).kill(killedBy, killedAt);
+      });
   }
 
   archiveCurrentPhase() {
@@ -47,9 +47,12 @@ class Round {
 
   archive() {
     return repository.getCurrentRound(this.gameId)
-    .then(currentRound => repository.refRound(currentRound.val().number)
-    .set(currentRound.val())
-    .then(() => repository.refCurrentRound(this.gameId).remove()));
+      .then(currentRound => {
+        firebase.database().ref(`games/${this.gameId}/rounds/${currentRound.val().number}`).set(currentRound.val())
+        // BUGGED @jsmadja
+        //repository.refRound(this.gameId, currentRound.val().number).set(currentRound.val())
+      })
+      .then(() => repository.refCurrentRound(this.gameId).remove());
   }
 }
 
