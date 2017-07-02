@@ -52,7 +52,7 @@ class Game {
   }
 
   createPlayer(name) {
-    const player = new Player({deviceId: this.deviceId, name, gameId: this.id});
+    const player = new Player({ deviceId: this.deviceId, name, gameId: this.id });
     return repository.updatePlayer(player);
   }
 
@@ -197,21 +197,19 @@ class Game {
             const players = new Players(result.val().players);
             // If vote is complete
             // TODO debug : looks like it is called twice
-            if (voteType == "WEREWOLVES_VOTE" && votes.countVotes() == players.getWerewolvesCount()) {
+            if (voteType === 'WEREWOLVES_VOTE' && votes.countVotes() === players.getWerewolvesCount()) {
               // Remove listener
               repository.getCurrentSubPhase(this.id).off();
               const votesResults = votes.getMajority();
-              console.log("= All werewolves voted", votesResults);
-              if (votesResults.length != 1) {
+              console.log('= All werewolves voted', votesResults);
+              if (votesResults.length !== 1) {
                 // TODO throw error : Mobile App should ensure that werewolves agree on a single name.
               }
-              this.killPlayer(votesResults[0]).then(() => {
-                return resolve(this.advanceToNextPhase().then(() => this.attachListenerForVotes("VILLAGERS_VOTE")));
-              })
-            } else if (voteType == "VILLAGERS_VOTE" && votes.countVotes() == players.getAliveCount()) {
-              const votesResults = votes.getMajority()
-              console.log("= All villagers voted", votesResults);
-              if (votesResults.length != 1) {
+              this.killPlayer(votesResults[0]).then(() => resolve(this.advanceToNextPhase().then(() => this.attachListenerForVotes('VILLAGERS_VOTE'))));
+            } else if (voteType === 'VILLAGERS_VOTE' && votes.countVotes() === players.getAliveCount()) {
+              const votesResults = votes.getMajority();
+              console.log('= All villagers voted', votesResults);
+              if (votesResults.length !== 1) {
                 // TODO throw error : Mobile App should ensure that werewolves agree on a single name.
               }
               this.killPlayer(votesResults[0]).then(() => resolve(this.advanceToNextPhase().then(() => this.attachListenerForVotes('VILLAGERS_VOTE'))));
