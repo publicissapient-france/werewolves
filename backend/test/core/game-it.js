@@ -6,12 +6,8 @@ const assert = require('assert');
 const findKillable = (gameId, players, role) => {
   const killables = _(players).filter(p => p.role === role && p.status !== 'DEAD').value();
   if (killables.length > 0) {
-<<<<<<< HEAD
-    return killables[0].name;
-=======
     const death = killables[0].name;
     return firebase.database().ref().child(`games/${gameId}/rounds/current/phase/subPhase`).update({ death });
->>>>>>> e8a6df9c9fded9588708397f66ed595be9367d7b
   }
 };
 
@@ -52,34 +48,6 @@ describe('Game', () => {
   it('Villagers should win !', (done) => {
     const deviceId = 'test_1';
     new Game(deviceId).start()
-<<<<<<< HEAD
-      .then((game) => {
-        gamesToDelete.push(game.id);
-        console.log(`= Game: ${game.id}`);
-        return game.associateUserIdToGame()
-          .then(() => Game.loadByDeviceId(deviceId))
-          .then(() => game.createPlayer('julien_'))
-          .then(() => game.createPlayer('qian_'))
-          .then(() => game.createPlayer('benjamin_'))
-          .then(() => game.createPlayer('pablo_'))
-          .then(() => game.createPlayer('michael_'))
-          .then(() => game.distributeRoles())
-          .then(() => game.waitForPlayersToBeReady())
-          .then(() => firebase.database().ref().child(`games/${game.id}/players/pablo_`).update({status: 'READYX'}))
-          .then(() => firebase.database().ref().child(`games/${game.id}/players/pablo_`).update({status: 'READY'}))
-          .then(() => firebase.database().ref().child(`games/${game.id}/players/benjamin_`).update({status: 'READY'}))
-          .then(() => firebase.database().ref().child(`games/${game.id}/players/qian_`).update({status: 'READY'}))
-          .then(() => firebase.database().ref().child(`games/${game.id}/players/michael_`).update({status: 'READY'}))
-          .then(() => firebase.database().ref().child(`games/${game.id}/players/julien_`).update({status: 'READY'}))
-          .then(() => {
-            setTimeout(() => Game.loadById(game.id).then(_game => werewolvesVote(game.id, _game.players)), 2000);
-            setTimeout(() => Game.loadById(game.id).then(_game => villagersVote(game.id, _game.players, "WEREWOLF")), 4000);
-            setTimeout(() => Game.loadById(game.id).then(_game => werewolvesVote(game.id, _game.players)), 6000);
-            setTimeout(() => Game.loadById(game.id).then(_game => villagersVote(game.id, _game.players, "WEREWOLF")), 8000);
-          })
-          .catch(done);
-      });
-=======
     .then((game) => {
       gamesToDelete.push(game.id);
       console.log(`= Game: ${game.id}`);
@@ -109,7 +77,6 @@ describe('Game', () => {
       })
       .catch(done);
     });
->>>>>>> e8a6df9c9fded9588708397f66ed595be9367d7b
   });
 
   /*it('Werewolves should win !', (done) => {

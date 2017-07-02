@@ -161,7 +161,7 @@ class Game {
   }
 
   attachListenerForVillagersVote() {
-    return new Promise((resolve, reject) => this.refCurrentVotes().on('child_added', this.onWerewolvesVote(resolve, reject)));
+    return new Promise((resolve, reject) => repository.refCurrentVotes(this.id).on('child_added', this.onWerewolvesVote(resolve, reject)));
   }
 
   // TO_BE_REVIEWED @jsmadja
@@ -179,14 +179,14 @@ class Game {
   onWerewolvesVote(resolve) {
     return (childSnapshot) => {
       if (childSnapshot.hasChild('voted')) {
-        this.refGame().once('value').then((result) => {
+        repository.getGame(this.id).then((result) => {
             const votes = new Votes(result.val().rounds.current.phase.subPhase.votes)
             const players = new Players(result.val().players)
             // If vote is complete
             // TODO debug : looks like it is called twice
             if (votes.countVotes() == players.getWerewolvesCount()) {
               const votesResults = votes.getMajority()
-              console.log("= All werewolves voted", votesResults)
+              console.log("= All werewolves voted", votesResults);
               if (votesResults.length != 1) {
                 // TODO throw error : Mobile App should ensure that werewolves agree on a single name.
               }
@@ -220,9 +220,9 @@ class Game {
   }
 
   killPlayer(playerId) {
-    return this.refCurrentSubPhase().update({death: playerId}).then(() => {
+    return repository.getCurrentSubPhase(this.id).update({death: playerId}).then(() => {
       return this.currentRound().killPlayer(playerId);
-    })
+    });
   }
 
   getRoundEndMessage() {
