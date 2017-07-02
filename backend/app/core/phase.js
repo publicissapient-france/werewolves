@@ -1,5 +1,5 @@
 class Phase {
-  constructor(data) {
+  constructor(data = {}) {
     Object.assign(this, data);
   }
 

@@ -4,7 +4,7 @@ const firebase = require('../services/firebase').getFirebaseClient();
 const repository = require('../services/repository');
 
 class Round {
-  constructor(data) {
+  constructor(data = {}) {
     Object.assign(this, data);
   }
 
