@@ -38,7 +38,8 @@ class Votes {
       }
     }
 
-    console.log(chosenOnes)
+    console.log("= Here are the vote results", chosenOnes)
+    return chosenOnes;
   }
 
 }

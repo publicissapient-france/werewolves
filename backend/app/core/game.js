@@ -190,6 +190,10 @@ class Game {
     return new Promise((resolve, reject) => this.refCurrentVotes().on('child_added', this.onWerewolvesVote(resolve, reject)));
   }
 
+  attachListenerForVillagersVote() {
+    return new Promise((resolve, reject) => this.refCurrentVotes().on('child_added', this.onWerewolvesVote(resolve, reject)));
+  }
+
   // TO_BE_REVIEWED @jsmadja
   onVotes(resolve, reject) {
     return (childSnapshot) => {
@@ -205,13 +209,23 @@ class Game {
   onWerewolvesVote(resolve, reject) {
     return (childSnapshot) => {
       if (childSnapshot.hasChild('voted')) {
-        console.log("***", childSnapshot.child('voted').val())
         this.refGame().once('value').then((result) => {
-          const votes = new Votes(result.val().rounds.current.phase.subPhase.votes)
-          const players = new Players(result.val().players)
-          console.log(votes.countVotes(), players.getWerewolvesCount());
-          votes.getMajority()
-        });
+            const votes = new Votes(result.val().rounds.current.phase.subPhase.votes)
+            const players = new Players(result.val().players)
+            // If vote is complete
+            // TODO debug : looks like it is called twice
+            if (votes.countVotes() == players.getWerewolvesCount()) {
+              const votesResults = votes.getMajority()
+              console.log("= All werewolves voted", votesResults)
+              if (votesResults.length != 1) {
+                // TODO throw error : Mobile App should ensure that werewolves agree on a single name.
+              }
+              this.killPlayer(votesResults[0]).then(() => {
+                return resolve(this.advanceToNextPhase().then(() => this.attachListenerForVotes()));
+              })
+            }
+          }
+        );
         return resolve();
       }
     };
@@ -233,7 +247,9 @@ class Game {
   }
 
   killPlayer(playerId) {
-    return this.currentRound().killPlayer(playerId);
+    return this.refCurrentSubPhase().update({death: playerId}).then(() => {
+      return this.currentRound().killPlayer(playerId);
+    })
   }
 
   checkEndConditions() {
