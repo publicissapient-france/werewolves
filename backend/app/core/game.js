@@ -194,25 +194,23 @@ class Game {
   onWerewolvesVote(resolve) {
     return (childSnapshot) => {
       if (childSnapshot.hasChild('voted')) {
-        repository.getGame(this.id).then((game) => {
-            const votes = new Votes(game.val().rounds.current.phase.subPhase.votes)
-            const players = new Players(game.val().players)
-            // If vote is complete
-            // TODO debug : looks like it is called twice
-            if (votes.countVotes() == players.getWerewolvesCount()) {
-              const votesResults = votes.getMajority()
-              console.log("= All werewolves voted", votesResults);
-              if (votesResults.length != 1) {
-                // TODO throw error : Mobile App should ensure that werewolves agree on a single name.
-              }
-              this.killPlayer(votesResults[0]).then(() => {
-                return resolve(this.advanceToNextPhase().then(() => this.attachListenerForVotes()));
-              })
+        return repository.getGame(this.id).then((game) => {
+          const votes = new Votes(game.val().rounds.current.phase.subPhase.votes);
+          const players = new Players(game.val().players);
+          // If vote is complete
+          // TODO debug : looks like it is called twice
+          if (votes.countVotes() === players.getWerewolvesCount()) {
+            const votesResults = votes.getMajority();
+            console.log('= All werewolves voted', votesResults);
+            if (votesResults.length !== 1) {
+              // TODO throw error : Mobile App should ensure that werewolves agree on a single name.
             }
+            return this.killPlayer(votesResults[0]).then(() =>
+              resolve(this.advanceToNextPhase().then(() => this.attachListenerForVotes())));
           }
-        );
-        return resolve();
+        });
       }
+      return resolve();
     };
   }
 
@@ -235,9 +233,9 @@ class Game {
   }
 
   killPlayer(playerId) {
-    return repository.getCurrentSubPhase(this.id).update({death: playerId}).then(() => {
-      return this.currentRound().killPlayer(playerId);
-    });
+    return repository.getCurrentSubPhase(this.id)
+    .update({ death: playerId })
+    .then(() => this.currentRound().killPlayer(playerId));
   }
 
   getRoundEndMessage() {
