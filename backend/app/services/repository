@@ -81,4 +81,9 @@ module.exports = {
   refCurrentSubPhase,
   refCurrentRound,
   refRound,
+
+  //
+  // Votes
+  //
+  refCurrentVotes: gameId => firebase.database().ref(`games/${gameId}/rounds/current/phase/subPhase/votes`),
 };
