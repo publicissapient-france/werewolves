@@ -9,6 +9,7 @@ const Round = require('./round');
 const Phase = require('./phase');
 const Promise = require('bluebird');
 const repository = require('../services/repository');
+const numbers = require('../utils/numbers');
 
 Array.prototype.pickRandom = function pickRandom() {
   return this.splice(Math.floor(Math.random() * this.length), 1);
@@ -16,7 +17,7 @@ Array.prototype.pickRandom = function pickRandom() {
 
 class Game {
   constructor(deviceId) {
-    this.id = Math.floor(Math.random() * (9999 - 1000)) + 1000;
+    this.id = numbers.random();
     this.deviceId = deviceId;
   }
 
