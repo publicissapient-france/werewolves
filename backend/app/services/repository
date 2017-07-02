@@ -36,8 +36,8 @@ module.exports = {
 
   refPlayers,
 
-  updatePlayer: (gameId, player) =>
-    firebase.database().ref().child(`games/${gameId}/players/${player.name}`)
+  updatePlayer: player =>
+    firebase.database().ref().child(`games/${player.gameId}/players/${player.name}`)
     .update(player),
 
   //

@@ -1,7 +1,7 @@
 const firebase = require('../services/firebase').getFirebaseClient();
 
 class Player {
-  constructor(data) {
+  constructor(data = { name: '', deviceId: '', gameId: '' }) {
     Object.assign(this, data);
   }
 

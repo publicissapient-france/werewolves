@@ -52,12 +52,8 @@ class Game {
   }
 
   createPlayer(name) {
-    const player = new Player({
-      deviceId: this.deviceId,
-      name,
-    });
-
-    return repository.updatePlayer(this.id, player);
+    const player = new Player({ deviceId: this.deviceId, name, gameId: this.id });
+    return repository.updatePlayer(player);
   }
 
   distributeRoles() {
