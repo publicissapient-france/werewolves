@@ -26,7 +26,7 @@ class Player {
   }
 
   kill(killedBy, killedAt) {
-    console.log(`= Kill Player: ${this.id}`);
+    console.log(`= ${this.id} killed by ${killedBy} on ${killedAt}`);
     return firebase.database().ref(`games/${this.gameId}/players/${this.id}`)
     .update({
       status: 'DEAD',

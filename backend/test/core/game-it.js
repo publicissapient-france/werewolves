@@ -7,7 +7,7 @@ const kill = (gameId, players, role) => {
   const killables = _(players).filter(p => p.role === role && p.status !== 'DEAD').value();
   if (killables.length > 0) {
     const death = killables[0].name;
-    return firebase.database().ref().child(`games/${gameId}/rounds/current/phase/subPhase`).update({death});
+    return firebase.database().ref().child(`games/${gameId}/rounds/current/phase/subPhase`).update({ death });
   }
   return Promise.resolve();
 };
@@ -15,7 +15,7 @@ const kill = (gameId, players, role) => {
 const assertWon = (game, done, status) => {
   console.log(_.map(game.players, p => `${p.name}\t\t${p.role}\t${p.status}`).join('\n'));
   if (game.status === status) {
-    console.log('\n' + game.status);
+    console.log(game.status);
     done();
   } else {
     done(new Error(`${game.status} !== ${status}`));
@@ -23,7 +23,6 @@ const assertWon = (game, done, status) => {
 };
 
 describe('Game', () => {
-
   const gamesToDelete = [];
 
   it('Villagers should win !', (done) => {
