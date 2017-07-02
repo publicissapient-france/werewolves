@@ -10,10 +10,10 @@ class Round {
 
   createNextPhase() {
     if (this.NIGHT) {
-      console.log(`= Create New Phase DAY`);
-      return new Phase({ state: 'DAY', subPhase: { state: 'VILLAGERS_VOTE'} });
+      console.log('= Create New Phase DAY');
+      return new Phase({ state: 'DAY', subPhase: { state: 'VILLAGERS_VOTE' } });
     }
-    console.log(`= Create New Phase NIGHT`);
+    console.log('= Create New Phase NIGHT');
     return new Phase({ state: 'NIGHT', subPhase: { state: 'WEREWOLVES_VOTE' } });
   }
 
