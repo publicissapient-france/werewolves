@@ -52,7 +52,7 @@ class Game {
   }
 
   createPlayer(name) {
-    const player = new Player({deviceId: this.deviceId, name, gameId: this.id});
+    const player = new Player({ deviceId: this.deviceId, name, gameId: this.id });
     return repository.updatePlayer(player);
   }
 
