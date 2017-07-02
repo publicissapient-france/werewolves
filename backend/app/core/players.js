@@ -25,7 +25,7 @@ class Players {
   }
 
   getAliveCount() {
-    return _(this.players).length;
+    return _(this.players).filter(player => player.isAlive()).value().length;
   }
 
   getWerewolvesCount() {

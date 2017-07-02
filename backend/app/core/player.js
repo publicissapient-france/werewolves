@@ -21,6 +21,10 @@ class Player {
     return this.status === 'READY';
   }
 
+  isAlive() {
+    return this.status === 'ALIVE';
+  }
+
   setAlive() {
     return firebase.database().ref(`games/${this.gameId}/players/${this.id}`).update({ status: 'ALIVE' });
   }

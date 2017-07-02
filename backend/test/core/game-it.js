@@ -67,9 +67,9 @@ describe('Game', () => {
           .then(() => firebase.database().ref().child(`games/${game.id}/players/julien_`).update({status: 'READY'}))
           .then(() => {
             setTimeout(() => Game.loadById(game.id).then(_game => werewolvesVote(game.id, _game.players)), 2000);
-            setTimeout(() => Game.loadById(game.id).then(_game => villagersVote(game.id, _game.players, "WEREWOLF")), 4000);
-            setTimeout(() => Game.loadById(game.id).then(_game => werewolvesVote(game.id, _game.players)), 6000);
-            setTimeout(() => Game.loadById(game.id).then(_game => villagersVote(game.id, _game.players, "WEREWOLF")), 8000);
+            //setTimeout(() => Game.loadById(game.id).then(_game => villagersVote(game.id, _game.players, "WEREWOLF")), 4000);
+            //setTimeout(() => Game.loadById(game.id).then(_game => werewolvesVote(game.id, _game.players)), 6000);
+            //setTimeout(() => Game.loadById(game.id).then(_game => villagersVote(game.id, _game.players, "WEREWOLF")), 8000);
           })
           .catch(done);
       });
