@@ -240,7 +240,15 @@ class Game {
 
   getRoundEndMessage() {
     return repository.getAlivePlayers(this.id)
-    .then(players => players.getWinners());
+    .then((players) => {
+      if (players.getVillagers().length === 1) {
+        return 'WEREWOLVES_VICTORY';
+      }
+      if (players.getWerewolves().length === 0) {
+        return 'VILLAGERS_VICTORY';
+      }
+      return undefined;
+    });
   }
 }
 

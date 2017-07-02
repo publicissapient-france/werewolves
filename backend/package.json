@@ -7,34 +7,33 @@
     "test": "test"
   },
   "dependencies": {
-    "actions-on-google": "^1.1.1",
-    "bluebird": "^3.5.0",
-    "body-parser": "^1.17.2",
-    "express": "^4.15.3",
-    "firebase": "^4.1.2",
-    "lodash": "^4.17.4",
-    "moment": "^2.18.1",
-    "redis": "^2.7.1"
+    "actions-on-google": "1.1.1",
+    "bluebird": "3.5.0",
+    "body-parser": "1.17.2",
+    "express": "4.15.3",
+    "firebase": "4.1.3",
+    "lodash": "4.17.4",
+    "moment": "2.18.1"
   },
   "devDependencies": {
-    "chai": "^4.0.2",
-    "eslint": "^4.0.0",
-    "eslint-config-airbnb-base": "^11.2.0",
-    "eslint-plugin-import": "^2.3.0",
-    "firebase-mock": "^1.0.9",
-    "firebase-server": "^0.10.1",
-    "istanbul": "^0.4.5",
-    "mocha": "^3.4.2",
-    "nodemon": "^1.11.0",
-    "proxyquire": "^1.8.0",
+    "chai": "4.0.2",
+    "eslint": "4.1.1",
+    "eslint-config-airbnb-base": "11.2.0",
+    "eslint-plugin-import": "2.6.1",
+    "firebase-mock": "1.0.10",
+    "firebase-server": "0.10.1",
+    "istanbul": "0.4.5",
+    "mocha": "3.4.2",
+    "nodemon": "1.11.0",
+    "npm-check": "5.4.4",
+    "proxyquire": "1.8.0",
+    "sinon": "2.3.6",
     "wait-until": "0.0.2"
   },
   "scripts": {
     "coverage": "./node_modules/istanbul/lib/cli.js --include-all-sources cover ./node_modules/mocha/bin/_mocha -- --recursive --timeout 30000 -R spec test",
     "postcoverage": "./node_modules/istanbul/lib/cli.js report clover",
-
     "test": "mocha --recursive --timeout 30000 test",
-    "redis": "docker run -d -p 6379:6379 redis",
     "start": "nodemon app/index.js",
     "lint": "eslint app"
   }
