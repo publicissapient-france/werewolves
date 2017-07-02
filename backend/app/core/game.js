@@ -52,7 +52,7 @@ class Game {
   }
 
   createPlayer(name) {
-    const player = new Player({ deviceId: this.deviceId, name, gameId: this.id });
+    const player = new Player({deviceId: this.deviceId, name, gameId: this.id});
     return repository.updatePlayer(player);
   }
 
@@ -172,15 +172,10 @@ class Game {
     return new Promise((resolve, reject) => repository.getCurrentSubPhase(this.id).on('child_added', this.onVotes(voteType, resolve, reject)));
   }
 
-  attachListenerForWerewolvesVote() {
-    console.log("= attachListenerForWerewolvesVote");
-    return new Promise((resolve, reject) => repository.refCurrentVotes(this.id).on('child_added', this.onWerewolvesVote(resolve, reject)));
+  attachListenerForVote(voteType) {
+    return new Promise((resolve, reject) => repository.refCurrentVotes(this.id).on('child_added', this.onVote(voteType, resolve, reject)));
   }
 
-  attachListenerForVillagersVote() {
-    console.log("= attachListenerForVillagersVote")
-    return new Promise((resolve, reject) => repository.refCurrentVotes(this.id).on('child_added', this.onVillagersVote(resolve, reject)));
-  }
 
   // TO_BE_REVIEWED @jsmadja
   onVotes(voteType, resolve) {
@@ -190,15 +185,13 @@ class Game {
         // Move reference
         repository.getCurrentSubPhase(this.id).off();
         // TODO indirection between Wolves and Villagers votes.
-        if (voteType === "WEREWOLVES_VOTE")
-          return resolve(this.attachListenerForWerewolvesVote());
-        else
-          return resolve(this.attachListenerForVillagersVote());
+        return resolve(this.attachListenerForVote(voteType));
+
       }
     };
   }
 
-  onWerewolvesVote(resolve) {
+  onVote(voteType, resolve) {
     return (childSnapshot) => {
       if (childSnapshot.hasChild('voted')) {
         repository.getGame(this.id).then((result) => {
@@ -206,10 +199,10 @@ class Game {
             const players = new Players(result.val().players)
             // If vote is complete
             // TODO debug : looks like it is called twice
-            if (votes.countVotes() == players.getWerewolvesCount()) {
+            if (voteType == "WEREWOLVES_VOTE" && votes.countVotes() == players.getWerewolvesCount()) {
               // Remove listener
-              repository.getCurrentSubPhase(this.id).off()
-              const votesResults = votes.getMajority()
+              repository.getCurrentSubPhase(this.id).off();
+              const votesResults = votes.getMajority();
               console.log("= All werewolves voted", votesResults);
               if (votesResults.length != 1) {
                 // TODO throw error : Mobile App should ensure that werewolves agree on a single name.
@@ -217,25 +210,7 @@ class Game {
               this.killPlayer(votesResults[0]).then(() => {
                 return resolve(this.advanceToNextPhase().then(() => this.attachListenerForVotes("VILLAGERS_VOTE")));
               })
-            }
-          }
-        );
-        return resolve();
-      }
-    };
-  }
-
-  onVillagersVote(resolve) {
-    return (childSnapshot) => {
-      console.log(childSnapshot.val())
-      if (childSnapshot.hasChild('voted')) {
-        repository.getGame(this.id).then((result) => {
-            const votes = new Votes(result.val().rounds.current.phase.subPhase.votes)
-            const players = new Players(result.val().players)
-            // If vote is complete
-            // TODO debug : looks like it is called twice
-            console.log("players.getAliveCount()", players.getAliveCount())
-            if (votes.countVotes() == players.getAliveCount()) {
+            } else if (voteType == "VILLAGERS_VOTE" && votes.countVotes() == players.getAliveCount()) {
               const votesResults = votes.getMajority()
               console.log("= All villagers voted", votesResults);
               if (votesResults.length != 1) {
@@ -251,7 +226,6 @@ class Game {
       }
     };
   }
-
 
   killPlayer(playerId) {
     return repository.getCurrentSubPhase(this.id)
