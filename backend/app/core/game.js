@@ -108,22 +108,37 @@ class Game {
         return this.currentRound().archiveCurrentPhase().then(() =>
           this.getRoundEndMessage().then((endMessage) => {
             if (endMessage) {
-              return this.currentRound().archive()
-              .then(() => repository.updateGameStatus(this.id, endMessage)
-              .then(() => repository.updateDeviceStatus(this.deviceId, endMessage)));
+              return this.endGame(endMessage);
             }
             const currentPhase = new Phase(game.val().rounds.current.phase);
             if (currentPhase.isDay()) {
-              return this.currentRound().archive()
-              .then(() => this.createNewRound())
-              .then(round => round.createNewPhase());
+              return this.startNight();
             }
-            return this.createNewPhase();
+            return this.startDay();
           }));
       }
-      return this.createNewRound()
-      .then(() => this.createNewPhase());
+      return this.startFirstNight();
     });
+  }
+
+  startFirstNight() {
+    return this.createNewRound().then(() => this.createNewPhase());
+  }
+
+  startDay() {
+    return this.createNewPhase();
+  }
+
+  startNight() {
+    return this.currentRound().archive()
+    .then(() => this.createNewRound())
+    .then(round => round.createNewPhase());
+  }
+
+  endGame(endMessage) {
+    return this.currentRound().archive()
+    .then(() => repository.updateGameStatus(this.id, endMessage)
+    .then(() => repository.updateDeviceStatus(this.deviceId, endMessage)));
   }
 
   currentRound() {
@@ -179,9 +194,9 @@ class Game {
   onWerewolvesVote(resolve) {
     return (childSnapshot) => {
       if (childSnapshot.hasChild('voted')) {
-        repository.getGame(this.id).then((result) => {
-            const votes = new Votes(result.val().rounds.current.phase.subPhase.votes)
-            const players = new Players(result.val().players)
+        repository.getGame(this.id).then((game) => {
+            const votes = new Votes(game.val().rounds.current.phase.subPhase.votes)
+            const players = new Players(game.val().players)
             // If vote is complete
             // TODO debug : looks like it is called twice
             if (votes.countVotes() == players.getWerewolvesCount()) {
