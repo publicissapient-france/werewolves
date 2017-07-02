@@ -1,18 +1,11 @@
 const Phase = require('./phase');
 const Player = require('./player');
 const firebase = require('../services/firebase').getFirebaseClient();
+const repository = require('../services/repository');
 
 class Round {
   constructor(data) {
     Object.assign(this, data);
-  }
-
-  refCurrentRound() {
-    return firebase.database().ref(`games/${this.gameId}/rounds/current`);
-  }
-
-  refRound(number) {
-    return firebase.database().ref(`games/${this.gameId}/rounds/${number}`);
   }
 
   createNextPhase() {
@@ -25,14 +18,12 @@ class Round {
   }
 
   createNewPhase() {
-    return this.refCurrentRound().once('value')
-    .then(result => {
-      return this.refCurrentRound().update({ phase: new Round(result.val()).createNextPhase() })
-    });
+    return repository.getCurrentRound(this.gameId)
+    .then(result => repository.updateCurrentRound(this.gameId, { phase: new Round(result.val()).createNextPhase() }));
   }
 
   killPlayer(playerId) {
-    return this.refCurrentRound().once('value')
+    return repository.getCurrentRound(this.gameId)
     .then((currentRound) => {
       const killedBy = currentRound.val().phase.subPhase.state;
       const killedAt = `ROUND_${currentRound.val().number}`;
@@ -44,7 +35,7 @@ class Round {
   }
 
   archiveCurrentPhase() {
-    const ref = this.refCurrentRound();
+    const ref = repository.refCurrentRound(this.gameId);
     return ref.child('phase').once('value').then((result) => {
       const currentPhase = result.val();
       const jsonContent = {};
@@ -55,10 +46,10 @@ class Round {
   }
 
   archive() {
-    return this.refCurrentRound().once('value')
-    .then(currentRound => this.refRound(currentRound.val().number)
+    return repository.getCurrentRound(this.gameId)
+    .then(currentRound => repository.refRound(currentRound.val().number)
     .set(currentRound.val())
-    .then(() => this.refCurrentRound().remove()));
+    .then(() => repository.refCurrentRound(this.gameId).remove()));
   }
 }
 
