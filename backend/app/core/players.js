@@ -2,7 +2,7 @@ const _ = require('lodash');
 const Player = require('./player');
 
 class Players {
-  constructor(players) {
+  constructor(players = []) {
     this.players = _(players).map(p => new Player(p)).value();
   }
 
