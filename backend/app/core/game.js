@@ -9,6 +9,7 @@ const Round = require('./round');
 const Phase = require('./phase');
 const Promise = require('bluebird');
 const repository = require('../services/repository');
+const numbers = require('../utils/numbers');
 
 Array.prototype.pickRandom = function pickRandom() {
   return this.splice(Math.floor(Math.random() * this.length), 1);
@@ -16,7 +17,7 @@ Array.prototype.pickRandom = function pickRandom() {
 
 class Game {
   constructor(deviceId) {
-    this.id = Math.floor(Math.random() * (9999 - 1000)) + 1000;
+    this.id = numbers.random();
     this.deviceId = deviceId;
   }
 
@@ -108,23 +109,40 @@ class Game {
         return this.currentRound().archiveCurrentPhase().then(() =>
           this.getRoundEndMessage().then((endMessage) => {
             if (endMessage) {
-              return this.currentRound().archive()
-                .then(() => repository.updateGameStatus(this.id, endMessage)
-                  .then(() => repository.updateDeviceStatus(this.deviceId, endMessage)));
+              return this.endGame(endMessage);
             }
             const currentPhase = new Phase(game.val().rounds.current.phase);
             if (currentPhase.isDay()) {
-              return this.currentRound().archive()
-                .then(() => this.createNewRound())
-                .then(round => round.createNewPhase())
-                .then(() => this.attachListenerForVotes("WEREWOLVES_VOTE"))
+              return this.startNight();
             }
-            return this.createNewPhase().then(() => this.attachListenerForVotes("VILLAGERS_VOTE"));
+            return this.startDay();
           }));
       }
-      return this.createNewRound()
-        .then(() => this.createNewPhase());
+      return this.startFirstNight();
     });
+  }
+
+  startFirstNight() {
+    return this.createNewRound().then(() => this.createNewPhase())
+      .then(() => this.attachListenerForVotes("WEREWOLVES_VOTE"));
+  }
+
+  startDay() {
+    return this.createNewPhase()
+      .then(() => this.attachListenerForVotes("VILLAGERS_VOTE"));
+  }
+
+  startNight() {
+    return this.currentRound().archive()
+      .then(() => this.createNewRound())
+      .then(round => round.createNewPhase())
+      .then(() => this.attachListenerForVotes("WEREWOLVES_VOTE"));
+  }
+
+  endGame(endMessage) {
+    return this.currentRound().archive()
+      .then(() => repository.updateGameStatus(this.id, endMessage)
+        .then(() => repository.updateDeviceStatus(this.deviceId, endMessage)));
   }
 
   currentRound() {
@@ -238,33 +256,25 @@ class Game {
     };
   }
 
-  onDeath(resolve, reject) {
-    return (childSnapshot) => {
-      if (childSnapshot.key === 'death') {
-        const playerId = childSnapshot.val();
-        this.killPlayer(playerId)
-          .then(() => {
-            repository.getCurrentSubPhase(this.id).off('child_added');
-            return resolve(this.advanceToNextPhase().then(() => this.attachListenerForDeath()));
-          })
-          .catch((err) => {
-            console.error(err);
-            reject(err);
-          });
-      }
-      return resolve();
-    };
-  }
 
   killPlayer(playerId) {
-    return repository.getCurrentSubPhase(this.id).update({death: playerId}).then(() => {
-      return this.currentRound().killPlayer(playerId);
-    });
+    return repository.getCurrentSubPhase(this.id)
+      .update({death: playerId})
+      .then(() => this.currentRound().killPlayer(playerId));
   }
 
   getRoundEndMessage() {
     return repository.getAlivePlayers(this.id)
-      .then(players => players.getWinners());
+      .then((players) => {
+        if (players.getVillagers().length === 1) {
+          return 'WEREWOLVES_VICTORY';
+        }
+        if (players.getWerewolves().length === 0) {
+          return 'VILLAGERS_VICTORY';
+        }
+        return undefined;
+      });
+
   }
 }
 
