@@ -65,14 +65,16 @@ describe('Game', () => {
           .then(() => game.createPlayer('pablo_'))
           .then(() => game.createPlayer('michael_'))
           .then(() => game.distributeRoles())
-          .then(() => game.waitForPlayersToBeReady())
-          .then(() => firebase.database().ref().child(`games/${game.id}/players/pablo_`).update({status: 'READYX'}))
-          .then(() => firebase.database().ref().child(`games/${game.id}/players/pablo_`).update({status: 'READY'}))
-          .then(() => firebase.database().ref().child(`games/${game.id}/players/benjamin_`).update({status: 'READY'}))
-          .then(() => firebase.database().ref().child(`games/${game.id}/players/qian_`).update({status: 'READY'}))
-          .then(() => firebase.database().ref().child(`games/${game.id}/players/michael_`).update({status: 'READY'}))
-          .then(() => firebase.database().ref().child(`games/${game.id}/players/julien_`).update({status: 'READY'}))
-          .then(() => firebase.database().ref().child(`games/${game.id}/players/jean_`).update({status: 'READY'}))
+          .then(() => {
+            game.attachListenerForReadiness()
+            firebase.database().ref().child(`games/${game.id}/players/pablo_`).update({status: 'READYX'})
+            firebase.database().ref().child(`games/${game.id}/players/pablo_`).update({status: 'READY'})
+            firebase.database().ref().child(`games/${game.id}/players/benjamin_`).update({status: 'READY'})
+            firebase.database().ref().child(`games/${game.id}/players/qian_`).update({status: 'READY'})
+            firebase.database().ref().child(`games/${game.id}/players/michael_`).update({status: 'READY'})
+            firebase.database().ref().child(`games/${game.id}/players/julien_`).update({status: 'READY'})
+            firebase.database().ref().child(`games/${game.id}/players/jean_`).update({status: 'READY'})
+          })
           .then(() => {
             setTimeout(() => Game.loadById(game.id).then(_game => werewolvesVote(game.id, _game.players)), 3000);
             setTimeout(() => Game.loadById(game.id).then(_game => _game.advanceToNextPhase()), 5000);
@@ -104,7 +106,7 @@ describe('Game', () => {
           .then(() => game.createPlayer('pablo'))
           .then(() => game.createPlayer('michael'))
           .then(() => game.distributeRoles())
-          .then(() => game.waitForPlayersToBeReady())
+          .then(() => game.attachListenerForReadiness())
           .then(() => firebase.database().ref().child(`games/${game.id}/players/pablo`).update({status: 'READYX'}))
           .then(() => firebase.database().ref().child(`games/${game.id}/players/pablo`).update({status: 'READY'}))
           .then(() => firebase.database().ref().child(`games/${game.id}/players/benjamin`).update({status: 'READY'}))

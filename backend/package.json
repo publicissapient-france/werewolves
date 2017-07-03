@@ -34,8 +34,7 @@
     "coverage": "./node_modules/istanbul/lib/cli.js --include-all-sources cover ./node_modules/mocha/bin/_mocha -- --recursive --timeout 30000 -R spec test",
     "postcoverage": "./node_modules/istanbul/lib/cli.js report clover",
     "test": "mocha --recursive --timeout 30000 test",
-    "startLocal": "nodemon app/index.js",
-    "start": "node app/index.js",
+    "start": "nodemon app/index.js",
     "lint": "eslint app"
   }
 }

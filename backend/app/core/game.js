@@ -36,7 +36,12 @@ class Game {
   }
 
   static loadByDeviceId(deviceId) {
-    return repository.getDevice(deviceId).then(device => Object.assign(new Game(deviceId, device.val().gameId), device.val()));
+    return repository.getDevice(deviceId).then(device => {
+      if (device && device.val()) {
+        return this.loadById(device.val().gameId)
+      }
+      return null;
+    });
   }
 
   static loadById(id) {
@@ -73,21 +78,23 @@ class Game {
     return new Player({id: player, gameId: this.id}).assignRole(role);
   }
 
-  waitForPlayersToBeReady() {
+  attachListenerForReadiness() {
     console.log('= Wait For Players To Be Ready ...');
-    return repository.getGame(this.id).then((_game) => {
-      let nbPlayersToWaitFor = _game.val().nbPlayers;
-      repository.getPlayersOrderByStatus(this.id).on('child_changed', (childSnapshot) => {
-        const player = new Player(childSnapshot.val());
-        if (player.isReady()) {
-          console.log(`= ${player.name} (${player.role}) is ready`);
-          nbPlayersToWaitFor--;
-          if (nbPlayersToWaitFor <= 0) {
-            return this.begin();
-          }
+    return new Promise((resolve, reject) => repository.refPlayers(this.id).on('value', this.onReady(resolve, reject)));
+  }
+
+  onReady() {
+    return (childSnapshot) => {
+      return repository.getGame(this.id).then((_game) => {
+        let nbPlayersToWaitFor = _game.val().nbPlayers;
+        const players = new Players(_game.val().players);
+        if (players.getReadyCount() == nbPlayersToWaitFor) {
+          repository.refPlayers(this.id).off();
+          console.log(`= Everybody is ready`);
+          return this.begin();
         }
       });
-    });
+    }
   }
 
   begin() {
@@ -197,7 +204,14 @@ class Game {
             // TODO throw error : Mobile App should ensure that werewolves agree on a single name.
           }
           //@jsmadja to review
+          // TODO find role
           this.killPlayer(votesResults[0])
+            .then(() => repository.refGame(this.id).update({
+              lastEvent: {
+                death: votesResults[0],
+                role: 'villager'
+              }
+            }))
             .then(() => repository.makeDeviceTalkToHome(this.id))
             .then(() => repository.updateDeviceStatus(this.deviceId, "WEREWOLVES_VOTE_COMPLETED"))
             .then(() => resolve(repository.updateGameStatus(this.id, "WEREWOLVES_VOTE_COMPLETED")));

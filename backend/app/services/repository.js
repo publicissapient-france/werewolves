@@ -98,6 +98,7 @@ module.exports = {
   refCurrentSubPhase,
   refCurrentRound,
   refRound,
+  refGame,
 
   //
   // Votes

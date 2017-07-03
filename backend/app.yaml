@@ -1,9 +1,7 @@
 # [START app_yaml]
 runtime: nodejs
 env: flex
-env_variables:
-  REDIS_HOST: 'redis-13673.c1.us-east1-2.gce.cloud.redislabs.com'
-  REDIS_PORT: 13673
-  REDIS_DB: 'werewolves'
-  REDIS_PASSWORD: 'w3r3W0!ves'
+health_check:
+  enable_health_check: False
+
 # [END app_yaml]

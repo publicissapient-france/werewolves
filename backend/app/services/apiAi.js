@@ -22,14 +22,49 @@ const buildMessageFromApiAiUnchanged = (messages) => {
   return message;
 };
 
+const buildWerewolvesVoteEndMessage = (killed, role) => {
+  let message = startMessage();
+
+  message = addSpeechToMessage(message, 'Werewolves made their choice. Werewolves, close your eyes.');
+  message = addSpeechToMessage(message, `<break time="3" />`);
+  message = addSpeechToMessage(message, 'The morning has come. Everybody should open their eyes');
+  message = addSpeechToMessage(message, `<break time="3" />`);
+  message = addSpeechToMessage(message, 'Everybody except');
+  message = addSpeechToMessage(message, `<break time="1" />`);
+  message = addSpeechToMessage(message, `${killed} who has been savagely slaughtered during the night.`);
+  message = addSpeechToMessage(message, `<break time="1" />`);
+  message = addSpeechToMessage(message, `He was a ${role}.`);
+  message = addSpeechToMessage(message, `<break time="2" />`);
+  message = addSpeechToMessage(message, `Who did it ? Villagers, defend yourselves ! Find the werewolves amongst you, and hang them ! Be wise.`);
+  return endMessage(message);
+}
+
+const buildVillagersVoteEndMessage = (killed) => {
+  let message = startMessage();
+
+  message = addSpeechToMessage(message, 'Villagers made their choice.');
+  message = addSpeechToMessage(message, `<break time="3" />`);
+  message = addSpeechToMessage(message, `${killed} end up on the gallows.`);
+  message = addSpeechToMessage(message, `<break time="1" />`);
+  message = addSpeechToMessage(message, `He was a <break time="1" /> ${role}.`);
+  message = addSpeechToMessage(message, `<break time="2" />`);
+  message = addSpeechToMessage(message, `Night is falling. Everybody, please close your eyes`);
+  return endMessage(message);
+}
+
 const resumeApp = (assistant) => {
   console.log('= Welcome action');
   Game.loadByDeviceId(assistant.body_.originalRequest.data.user.userId).then((game) => {
     // Case WEREWOLVES vote completed
-
-
-
-    if (game && game.gameId && game.status !== 'END') {
+    if (game) {
+      console.log(game.id, game.status)
+    }
+    if (game && game.id && game.status === 'WEREWOLVES_VOTE_COMPLETED') {
+      console.log(game, game.lastEvent)
+      assistant.tell(buildWerewolvesVoteEndMessage(game.lastEvent.death, game.lastEvent.role));
+    } else if (game && game.id && game.status === 'VILLAGERS_VOTE_COMPLETED') {
+      assistant.tell(buildVillagersVoteEndMessage(game.lastEvent.death, game.lastEvent.role));
+    } else if (game && game.id && game.status !== 'END') {
       assistant.ask(`Resuming message : game status is ${game.status}`);
     } else {
       const message = buildMessageFromApiAiUnchanged(assistant.body_.result.fulfillment.messages);
@@ -69,7 +104,7 @@ const createGame = (assistant) => {
 const startGame = (assistant) => {
   // TODO check that there is more than 6 players ? Mobile ?
   Game.loadByDeviceId(assistant.body_.originalRequest.data.user.userId).then((game) => {
-    const gameId = game.gameId;
+    const gameId = game.id;
     console.log(`Display all players name for ${gameId}`);
 
     repository.getAllPlayers(gameId).then((players) => {
@@ -104,7 +139,7 @@ const startGameIsConfirmed = (assistant) => {
 
     message = endMessage(message);
 
-    game.waitForPlayersToBeReady();
+    game.attachListenerForReadiness();
 
     assistant.tell(message);
   });
