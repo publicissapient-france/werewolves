@@ -1,4 +1,6 @@
 const Game = require('../core/game');
+const repository = require('../services/repository');
+
 
 module.exports.apiAiActionMap = new Map();
 
@@ -21,9 +23,12 @@ const buildMessageFromApiAiUnchanged = (messages) => {
 };
 
 const resumeApp = (assistant) => {
-  console.log('Welcome action');
-  console.log('User id', assistant.body_.originalRequest.data.user.userId);
+  console.log('= Welcome action');
   Game.loadByDeviceId(assistant.body_.originalRequest.data.user.userId).then((game) => {
+    // Case WEREWOLVES vote completed
+
+
+
     if (game && game.gameId && game.status !== 'END') {
       assistant.ask(`Resuming message : game status is ${game.status}`);
     } else {
@@ -37,12 +42,12 @@ function newCreateMessage(assistant, id) {
   let message = startMessage();
   const messages = assistant.body_.result.fulfillment.messages;
   messages.forEach((messageFromAi) => {
-      if (messageFromAi.textToSpeech) {
-        console.log('Handling ', messageFromAi.textToSpeech);
-        const addition = messageFromAi.textToSpeech.replace('$gameId', id.toString().split('').join(' <break time="1" />'));
-        message = addSpeechToMessage(message, addition);
-      }
-    });
+    if (messageFromAi.textToSpeech) {
+      console.log('Handling ', messageFromAi.textToSpeech);
+      const addition = messageFromAi.textToSpeech.replace('$gameId', id.toString().split('').join(' <break time="1" />'));
+      message = addSpeechToMessage(message, addition);
+    }
+  });
   message = endMessage(message);
   return message;
 }
@@ -67,7 +72,7 @@ const startGame = (assistant) => {
     const gameId = game.gameId;
     console.log(`Display all players name for ${gameId}`);
 
-    game.getAllPlayers().then((players) => {
+    repository.getAllPlayers(gameId).then((players) => {
       let message = startMessage();
 
       message = addSpeechToMessage(message, assistant.body_.result.fulfillment.messages[0].textToSpeech.replace('$playersLength', players.length));
@@ -92,9 +97,10 @@ const startGameIsConfirmed = (assistant) => {
 
     let message = startMessage();
     message = addSpeechToMessage(message, assistant.body_.result.fulfillment.messages[0].textToSpeech);
-    message = addSpeechToMessage(message, assistant.body_.result.fulfillment.messages[1].textToSpeech);
 
     message = addAudioToMessage(message, 'https://xebia-sandbox.appspot.com/static/wolves.mp3', 'wolves');
+
+    message = addSpeechToMessage(message, assistant.body_.result.fulfillment.messages[1].textToSpeech.replace('${pause}', '<break time="3" />'));
 
     message = endMessage(message);
 

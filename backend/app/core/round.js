@@ -11,15 +11,15 @@ class Round {
   createNextPhase() {
     if (this.NIGHT) {
       console.log('= Create New Phase DAY');
-      return new Phase({state: 'DAY', subPhase: {state: 'VILLAGERS_VOTE'}});
+      return new Phase({ state: 'DAY', subPhase: { state: 'VILLAGERS_VOTE' } });
     }
     console.log('= Create New Phase NIGHT');
-    return new Phase({state: 'NIGHT', subPhase: {state: 'WEREWOLVES_VOTE'}});
+    return new Phase({ state: 'NIGHT', subPhase: { state: 'WEREWOLVES_VOTE' } });
   }
 
   createNewPhase() {
     return repository.getCurrentRound(this.gameId)
-      .then(result => repository.updateCurrentRound(this.gameId, {phase: new Round(result.val()).createNextPhase()}));
+      .then(result => repository.updateCurrentRound(this.gameId, { phase: new Round(result.val()).createNextPhase() }));
   }
 
   killPlayer(playerId) {
@@ -47,10 +47,10 @@ class Round {
 
   archive() {
     return repository.getCurrentRound(this.gameId)
-      .then(currentRound => {
-        firebase.database().ref(`games/${this.gameId}/rounds/${currentRound.val().number}`).set(currentRound.val())
+      .then((currentRound) => {
+        firebase.database().ref(`games/${this.gameId}/rounds/${currentRound.val().number}`).set(currentRound.val());
         // BUGGED @jsmadja
-        //repository.refRound(this.gameId, currentRound.val().number).set(currentRound.val())
+        // repository.refRound(this.gameId, currentRound.val().number).set(currentRound.val())
       })
       .then(() => repository.refCurrentRound(this.gameId).remove());
   }

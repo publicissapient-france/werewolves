@@ -1,7 +1,7 @@
 const firebase = require('../services/firebase').getFirebaseClient();
 
 class Player {
-  constructor(data = {name: '', deviceId: '', gameId: ''}) {
+  constructor(data = { name: '', deviceId: '', gameId: '' }) {
     Object.assign(this, data);
   }
 
@@ -30,7 +30,7 @@ class Player {
   }
 
   setAlive() {
-    return firebase.database().ref(`games/${this.gameId}/players/${this.id}`).update({status: 'ALIVE'});
+    return firebase.database().ref(`games/${this.gameId}/players/${this.id}`).update({ status: 'ALIVE' });
   }
 
   kill(killedBy, killedAt) {
@@ -44,7 +44,7 @@ class Player {
   }
 
   assignRole(role) {
-    return firebase.database().ref(`games/${this.gameId}/players/${this.id}`).update({role});
+    return firebase.database().ref(`games/${this.gameId}/players/${this.id}`).update({ role });
   }
 }
 

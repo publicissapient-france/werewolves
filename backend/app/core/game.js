@@ -16,8 +16,9 @@ Array.prototype.pickRandom = function pickRandom() {
 };
 
 class Game {
-  constructor(deviceId) {
-    this.id = numbers.random();
+  constructor(deviceId, gameId) {
+    // Do not get id from data ...
+    this.id = gameId || numbers.random();
     this.deviceId = deviceId;
   }
 
@@ -35,11 +36,13 @@ class Game {
   }
 
   static loadByDeviceId(deviceId) {
-    return repository.getDevice(deviceId).then(device => Object.assign(new Game(), device.val()));
+    return repository.getDevice(deviceId).then(device => Object.assign(new Game(deviceId, device.val().gameId), device.val()));
   }
 
   static loadById(id) {
-    return repository.getGame(id).then(game => Object.assign(new Game(), game.val()));
+    return repository.getGame(id).then(game => {
+      return Object.assign(new Game(game.val().deviceId, id), game.val())
+    });
   }
 
   associateUserIdToGame() {
@@ -52,7 +55,7 @@ class Game {
   }
 
   createPlayer(name) {
-    const player = new Player({ deviceId: this.deviceId, name, gameId: this.id });
+    const player = new Player({deviceId: this.deviceId, name, gameId: this.id});
     return repository.updatePlayer(player);
   }
 
@@ -83,7 +86,7 @@ class Game {
             return this.begin();
           }
         }
-        //return Promise.resolve();
+        // return Promise.resolve();
       });
     });
   }
@@ -110,11 +113,11 @@ class Game {
 
             if (currentPhase.isDay()) {
               return this.startNight();
-            } else
-              return this.startDay();
+            }
+            return this.startDay();
           }));
-      } else
-        return this.startFirstNight();
+      }
+      return this.startFirstNight();
     });
   }
 
@@ -136,7 +139,7 @@ class Game {
   }
 
   endGame(endMessage) {
-    console.log('= EndGame', endMessage)
+    console.log('= EndGame', endMessage);
     return this.currentRound().archive()
       .then(() => repository.updateGameStatus(this.id, endMessage)
         .then(() => repository.updateDeviceStatus(this.deviceId, endMessage)));
@@ -186,23 +189,23 @@ class Game {
         const votes = new Votes(result.val().rounds.current.phase.subPhase.votes);
         const players = new Players(result.val().players);
         // If vote is complete
-        if (voteType == "WEREWOLVES_VOTE" && votes.countVotes() == players.getAliveWerewolvesCount()) {
+        if (voteType == 'WEREWOLVES_VOTE' && votes.countVotes() == players.getAliveWerewolvesCount()) {
           // Remove listener
           repository.refCurrentVotes(this.id).off();
           const votesResults = votes.getMajority();
-          console.log("= All werewolves voted", votesResults);
+          console.log('= All werewolves voted', votesResults);
           if (votesResults.length != 1) {
             // TODO throw error : Mobile App should ensure that werewolves agree on a single name.
           }
-          this.killPlayer(votesResults[0]).then(() => {
-            return resolve(this.advanceToNextPhase());
-          })
-        } else if (voteType == "VILLAGERS_VOTE" && votes.countVotes() == players.getAliveCount()) {
+          //@jsmadja to review
+          this.killPlayer(votesResults[0])
+            .then(() => repository.updateDeviceStatus(this.deviceId, "WEREWOLVES_VOTE_COMPLETED"))
+            .then(() => resolve(repository.updateGameStatus(this.id, "WEREWOLVES_VOTE_COMPLETED")));
+        } else if (voteType == 'VILLAGERS_VOTE' && votes.countVotes() == players.getAliveCount()) {
           repository.refCurrentVotes(this.id).off();
           const votesResults = votes.getMajority()
-          console.log("= All villagers voted", votesResults);
-
-          this.killPlayer(votesResults[0]).then(() => resolve(this.advanceToNextPhase()));
+          console.log('= All villagers voted', votesResults);
+          resolve(this.killPlayer(votesResults[0]));
         }
       });
     };
@@ -225,6 +228,10 @@ class Game {
         }
         return undefined;
       });
+  }
+
+  werewolvesVotesAreCompleted() {
+    return this.currentRound().phase.isDay()
   }
 }
 

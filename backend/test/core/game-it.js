@@ -75,10 +75,14 @@ describe('Game', () => {
           .then(() => firebase.database().ref().child(`games/${game.id}/players/jean_`).update({status: 'READY'}))
           .then(() => {
             setTimeout(() => Game.loadById(game.id).then(_game => werewolvesVote(game.id, _game.players)), 3000);
+            setTimeout(() => Game.loadById(game.id).then(_game => _game.advanceToNextPhase()), 5000);
             setTimeout(() => Game.loadById(game.id).then(_game => villagersVote(game.id, _game.players, "WEREWOLF")), 6000);
+            setTimeout(() => Game.loadById(game.id).then(_game => _game.advanceToNextPhase()), 8000);
             setTimeout(() => Game.loadById(game.id).then(_game => werewolvesVote(game.id, _game.players)), 9000);
+            setTimeout(() => Game.loadById(game.id).then(_game => _game.advanceToNextPhase()), 11000);
             setTimeout(() => Game.loadById(game.id).then(_game => villagersVote(game.id, _game.players, "WEREWOLF")), 12000);
-            setTimeout(() => Game.loadById(game.id).then(_game => assertWon(_game, done, 'VILLAGERS_VICTORY')), 15000);
+            setTimeout(() => Game.loadById(game.id).then(_game => _game.advanceToNextPhase()), 14000);
+            setTimeout(() => Game.loadById(game.id).then(_game => assertWon(_game, done, 'VILLAGERS_VICTORY')), 16000);
           })
           .catch(done);
       });
@@ -109,9 +113,12 @@ describe('Game', () => {
           .then(() => firebase.database().ref().child(`games/${game.id}/players/julien`).update({status: 'READY'}))
           .then(() => {
             setTimeout(() => Game.loadById(game.id).then(_game => werewolvesVote(game.id, _game.players)), 3000);
+            setTimeout(() => Game.loadById(game.id).then(_game => _game.advanceToNextPhase()), 5000);
             setTimeout(() => Game.loadById(game.id).then(_game => villagersVote(game.id, _game.players, "VILLAGER")), 6000);
+            setTimeout(() => Game.loadById(game.id).then(_game => _game.advanceToNextPhase()), 8000);
             setTimeout(() => Game.loadById(game.id).then(_game => werewolvesVote(game.id, _game.players)), 9000);
-            setTimeout(() => Game.loadById(game.id).then(_game => assertWon(_game, done, 'WEREWOLVES_VICTORY')), 15000);
+            setTimeout(() => Game.loadById(game.id).then(_game => _game.advanceToNextPhase()), 11000);
+            setTimeout(() => Game.loadById(game.id).then(_game => assertWon(_game, done, 'WEREWOLVES_VICTORY')), 14000);
           })
           .catch(done);
       });
