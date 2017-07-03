@@ -4,7 +4,7 @@ const Game = require('../../app/core/game');
 const Players = require('../../app/core/players');
 const Repository = require('../../app/services/repository');
 
-describe('Game - RoundMEssage', () => {
+describe('Game - RoundMessage', () => {
   let sandbox;
 
   beforeEach(() => {

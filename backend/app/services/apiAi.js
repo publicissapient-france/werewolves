@@ -33,30 +33,36 @@ const resumeApp = (assistant) => {
   });
 };
 
-const createGame = (assistant) => {
-  console.log('Creating game');
-  new Game(assistant.body_.originalRequest.data.user.userId).start().then((game) => {
-    const id = game.id;
-    console.log('Game id is', id);
-
-    let message = startMessage();
-    const messages = assistant.body_.result.fulfillment.messages;
-    messages.forEach((messageFromAi) => {
+function newCreateMessage(assistant, id) {
+  let message = startMessage();
+  const messages = assistant.body_.result.fulfillment.messages;
+  messages.forEach((messageFromAi) => {
       if (messageFromAi.textToSpeech) {
         console.log('Handling ', messageFromAi.textToSpeech);
         const addition = messageFromAi.textToSpeech.replace('$gameId', id.toString().split('').join(' <break time="1" />'));
         message = addSpeechToMessage(message, addition);
       }
     });
-    message = endMessage(message);
-    console.log(`Game id is ${id}`);
+  message = endMessage(message);
+  return message;
+}
 
-    game.associateUserIdToGame(assistant.body_.originalRequest.data.user.userId);
+function getUserId(assistant) {
+  return assistant.body_.originalRequest.data.user.userId;
+}
+
+const createGame = (assistant) => {
+  console.log('Creating game');
+  new Game(getUserId(assistant)).create().then((game) => {
+    console.log('Game id is', game.id);
+    const message = newCreateMessage(assistant, game.id);
+    game.associateUserIdToGame(getUserId(assistant));
     assistant.tell(message);
   });
 };
 
 const startGame = (assistant) => {
+  // TODO check that there is more than 6 players ? Mobile ?
   Game.loadByDeviceId(assistant.body_.originalRequest.data.user.userId).then((game) => {
     const gameId = game.gameId;
     console.log(`Display all players name for ${gameId}`);

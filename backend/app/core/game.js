@@ -21,7 +21,7 @@ class Game {
     this.deviceId = deviceId;
   }
 
-  start() {
+  create() {
     const json = {};
     json[this.id] = {
       startDate: moment().format(),
@@ -201,9 +201,7 @@ class Game {
           repository.refCurrentVotes(this.id).off();
           const votesResults = votes.getMajority()
           console.log("= All villagers voted", votesResults);
-          if (votesResults.length != 1) {
-            // TODO throw error : Mobile App should ensure that werewolves agree on a single name.
-          }
+
           this.killPlayer(votesResults[0]).then(() => resolve(this.advanceToNextPhase()));
         }
       });

@@ -24,15 +24,6 @@ function playAudio(assistant) {
   assistant.tell(text_to_speech);
 }
 
-function simpleResponse(home) {
-  home.ask({
-    speech: 'Howdy! I can tell you fun facts about ' +
-    'almost any number, like 42. What do you have in mind?',
-    displayText: 'Howdy! I can tell you fun facts about almost any ' +
-    'number. What do you have in mind?',
-  });
-}
-
 app.get('/', (req, res) => {
   res.status(200).send('Basic page for the Werewolves game').end();
 });

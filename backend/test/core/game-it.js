@@ -52,7 +52,7 @@ describe('Game', () => {
 
   it('Villagers should win !', (done) => {
     const deviceId = 'test_1';
-    new Game(deviceId).start()
+    new Game(deviceId).create()
       .then((game) => {
         gamesToDelete.push(game.id);
         console.log(`= Game: ${game.id}`);
@@ -88,7 +88,7 @@ describe('Game', () => {
 
   it('Werewolves should win !', (done) => {
     const deviceId = 'test_2';
-    new Game(deviceId).start()
+    new Game(deviceId).create()
       .then((game) => {
         gamesToDelete.push(game.id);
         console.log(`= Game: ${game.id}`);
