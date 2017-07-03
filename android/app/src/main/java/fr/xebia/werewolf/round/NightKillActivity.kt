@@ -10,10 +10,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import fr.xebia.werewolf.R
 import fr.xebia.werewolf.firebaseDbRef
-import fr.xebia.werewolf.model.KillIntention
-import fr.xebia.werewolf.model.Player
-import fr.xebia.werewolf.model.PlayerState
-import fr.xebia.werewolf.model.Role
+import fr.xebia.werewolf.model.*
 import fr.xebia.werewolf.prefsUtil
 import kotlinx.android.synthetic.main.activity_night_kill.*
 
@@ -71,8 +68,8 @@ class NightKillActivity : AppCompatActivity(), VoteContract.View {
         })
         // transition to night sleep till the death is annonced
         buttonKillVillager.setOnClickListener {
-            val subPhaseRef = firebaseDbRef.child("games/${prefsUtil.currentGameId}/rounds/current/phase/subPhase")
-            subPhaseRef.child("death").setValue(playerToKill.name)
+            val subPhaseRef = firebaseDbRef.child("games/${prefsUtil.currentGameId}/rounds/current/phase/subPhase/votes")
+            subPhaseRef.child(prefsUtil.currentPlayerName).setValue(Vote(playerToKill.name))
             startActivity(Intent(this@NightKillActivity, NightSleepActivity::class.java))
             finish()
         }
