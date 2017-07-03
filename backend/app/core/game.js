@@ -31,7 +31,7 @@ class Game {
       roundNumber: 0,
     };
     return repository.updateGames(json)
-      .then(() => this);
+    .then(() => this);
   }
 
   static loadByDeviceId(deviceId) {
@@ -44,11 +44,11 @@ class Game {
 
   associateUserIdToGame() {
     return repository.getDevices().child(this.deviceId)
-      .set({
-        startDate: moment().format(),
-        gameId: this.id,
-        status: 'INITIAL',
-      });
+    .set({
+      startDate: moment().format(),
+      gameId: this.id,
+      status: 'INITIAL',
+    });
   }
 
   createPlayer(name) {
@@ -58,16 +58,16 @@ class Game {
 
   distributeRoles() {
     return repository.getAllPlayers(this.id)
-      .then((players) => {
-        const roles = [...cards.distribution[players.length]];
-        return Promise.mapSeries(players, player =>
-            this.assignRole(player, roles.pickRandom().toString()))
-          .then(() => repository.updatePlayerCount(this.id, players.length));
-      });
+    .then((players) => {
+      const roles = [...cards.distribution[players.length]];
+      return Promise.mapSeries(players, player =>
+        this.assignRole(player, roles.pickRandom().toString()))
+      .then(() => repository.updatePlayerCount(this.id, players.length));
+    });
   }
 
   assignRole(player, role) {
-    return new Player({id: player, gameId: this.id}).assignRole(role);
+    return new Player({ id: player, gameId: this.id }).assignRole(role);
   }
 
   waitForPlayersToBeReady() {
@@ -83,19 +83,19 @@ class Game {
             return this.begin();
           }
         }
-        //return Promise.resolve();
+        // return Promise.resolve();
       });
     });
   }
 
   begin() {
     return Promise.mapSeries(repository.getAllPlayers(this.id), playerName => this.player(playerName).setAlive())
-      .then(() => repository.refPlayers(this.id).off())
-      .then(() => this.advanceToNextPhase());
+    .then(() => repository.refPlayers(this.id).off())
+    .then(() => this.advanceToNextPhase());
   }
 
   player(name) {
-    return new Player({id: name, gameId: this.id});
+    return new Player({ id: name, gameId: this.id });
   }
 
   advanceToNextPhase() {
@@ -110,57 +110,57 @@ class Game {
 
             if (currentPhase.isDay()) {
               return this.startNight();
-            } else
-              return this.startDay();
+            }
+            return this.startDay();
           }));
-      } else
-        return this.startFirstNight();
+      }
+      return this.startFirstNight();
     });
   }
 
   startFirstNight() {
     return this.createNewRound().then(() => this.createNewPhase())
-      .then(() => this.attachListenerForVotes('WEREWOLVES_VOTE'));
+    .then(() => this.attachListenerForVotes('WEREWOLVES_VOTE'));
   }
 
   startDay() {
     return this.createNewPhase()
-      .then(() => this.attachListenerForVotes('VILLAGERS_VOTE'));
+    .then(() => this.attachListenerForVotes('VILLAGERS_VOTE'));
   }
 
   startNight() {
     return this.currentRound().archive()
-      .then(() => this.createNewRound())
-      .then(round => round.createNewPhase())
-      .then(() => this.attachListenerForVotes('WEREWOLVES_VOTE'));
+    .then(() => this.createNewRound())
+    .then(round => round.createNewPhase())
+    .then(() => this.attachListenerForVotes('WEREWOLVES_VOTE'));
   }
 
   endGame(endMessage) {
-    console.log('= EndGame', endMessage)
+    console.log('= EndGame', endMessage);
     return this.currentRound().archive()
-      .then(() => repository.updateGameStatus(this.id, endMessage)
-        .then(() => repository.updateDeviceStatus(this.deviceId, endMessage)));
+    .then(() => repository.updateGameStatus(this.id, endMessage)
+    .then(() => repository.updateDeviceStatus(this.deviceId, endMessage)));
   }
 
   currentRound() {
-    return new Round({gameId: this.id});
+    return new Round({ gameId: this.id });
   }
 
   createNewRound() {
     return repository.getGame(this.id)
-      .then((game) => {
-        const roundNumber = parseInt(game.val().roundNumber, 10) + 1;
-        console.log(`\n= Create New Round: ${roundNumber}`);
-        return repository.updateRounds(this.id, {current: {number: roundNumber}})
-          .then(() => repository.updateGame(this.id, {roundNumber, status: `ROUND_${roundNumber}`})
-            .then(() => repository.updateDevice(this.deviceId, {status: `ROUND_${roundNumber}`})))
-          .then(() => this.currentRound());
-      });
+    .then((game) => {
+      const roundNumber = parseInt(game.val().roundNumber, 10) + 1;
+      console.log(`\n= Create New Round: ${roundNumber}`);
+      return repository.updateRounds(this.id, { current: { number: roundNumber } })
+      .then(() => repository.updateGame(this.id, { roundNumber, status: `ROUND_${roundNumber}` })
+      .then(() => repository.updateDevice(this.deviceId, { status: `ROUND_${roundNumber}` })))
+      .then(() => this.currentRound());
+    });
   }
 
   createNewPhase() {
     return repository.getCurrentRound(this.id)
-      .then(result => repository.updateCurrentRound(this.id, {phase: new Round(result.val()).createNextPhase()}));
+    .then(result => repository.updateCurrentRound(this.id, { phase: new Round(result.val()).createNextPhase() }));
   }
 
   attachListenerForVotes(voteType) {
@@ -186,21 +186,19 @@ class Game {
         const votes = new Votes(result.val().rounds.current.phase.subPhase.votes);
         const players = new Players(result.val().players);
         // If vote is complete
-        if (voteType == "WEREWOLVES_VOTE" && votes.countVotes() == players.getAliveWerewolvesCount()) {
+        if (voteType == 'WEREWOLVES_VOTE' && votes.countVotes() == players.getAliveWerewolvesCount()) {
           // Remove listener
           repository.refCurrentVotes(this.id).off();
           const votesResults = votes.getMajority();
-          console.log("= All werewolves voted", votesResults);
+          console.log('= All werewolves voted', votesResults);
           if (votesResults.length != 1) {
             // TODO throw error : Mobile App should ensure that werewolves agree on a single name.
           }
-          this.killPlayer(votesResults[0]).then(() => {
-            return resolve(this.advanceToNextPhase());
-          })
-        } else if (voteType == "VILLAGERS_VOTE" && votes.countVotes() == players.getAliveCount()) {
+          this.killPlayer(votesResults[0]).then(() => resolve(this.advanceToNextPhase()));
+        } else if (voteType == 'VILLAGERS_VOTE' && votes.countVotes() == players.getAliveCount()) {
           repository.refCurrentVotes(this.id).off();
-          const votesResults = votes.getMajority()
-          console.log("= All villagers voted", votesResults);
+          const votesResults = votes.getMajority();
+          console.log('= All villagers voted', votesResults);
           if (votesResults.length != 1) {
             // TODO throw error : Mobile App should ensure that werewolves agree on a single name.
           }
@@ -212,21 +210,21 @@ class Game {
 
   killPlayer(playerId) {
     return repository.getCurrentSubPhase(this.id)
-      .update({death: playerId})
-      .then(() => this.currentRound().killPlayer(playerId));
+    .update({ death: playerId })
+    .then(() => this.currentRound().killPlayer(playerId));
   }
 
   getRoundEndMessage() {
     return repository.getAlivePlayers(this.id)
-      .then((players) => {
-        if (players.getVillagers().length === 1) {
-          return 'WEREWOLVES_VICTORY';
-        }
-        if (players.getWerewolves().length === 0) {
-          return 'VILLAGERS_VICTORY';
-        }
-        return undefined;
-      });
+    .then((players) => {
+      if (players.getVillagers().length === 1) {
+        return 'WEREWOLVES_VICTORY';
+      }
+      if (players.getWerewolves().length === 0) {
+        return 'VILLAGERS_VICTORY';
+      }
+      return undefined;
+    });
   }
 }
 
