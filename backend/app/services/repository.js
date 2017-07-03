@@ -11,6 +11,8 @@ const refDevice = deviceId => firebase.database().ref(`devices/${deviceId}`);
 const refCurrentRound = gameId => firebase.database().ref(`games/${gameId}/rounds/current`);
 const refCurrentSubPhase = gameId => firebase.database().ref(`games/${gameId}/rounds/current/phase/subPhase`);
 const refRound = (gameId, number) => firebase.database().ref(`games/${this.gameId}/rounds/${number}`);
+
+// TODO here it is probably useless to reload players
 const getRandomPlayer = (gameId) =>
   refPlayers(gameId)
     .once('value')
@@ -24,6 +26,7 @@ module.exports = {
   //
   // Players
   //
+  // TODO here it is probably useless to reload players
   getAlivePlayers: gameId =>
     refPlayers(gameId)
       .orderByChild('status')
@@ -33,13 +36,11 @@ module.exports = {
 
   updatePlayerCount: (gameId, nbPlayers) => refGame(gameId).update({nbPlayers}),
 
+  // TODO here it is probably useless to reload players
   getAllPlayers: gameId =>
     refPlayers(gameId)
       .once('value')
       .then(players => _.keys(players.val())),
-
-  getPlayersOrderByStatus: gameId =>
-    refPlayers(gameId).orderByChild('status'),
 
   refPlayers,
 
@@ -89,6 +90,7 @@ module.exports = {
   updateRounds: (gameId, values) =>
     refGame(gameId).child('rounds').update(values),
 
+  // TODO here it is probably useless to reload rounds
   getCurrentRound: gameId => refCurrentRound(gameId).once('value'),
 
   updateCurrentRound: (gameId, values) => refCurrentRound(gameId).update(values),

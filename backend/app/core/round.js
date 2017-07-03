@@ -18,11 +18,13 @@ class Round {
   }
 
   createNewPhase() {
+    // TODO here it is probably useless to reload rounds
     return repository.getCurrentRound(this.gameId)
       .then(result => repository.updateCurrentRound(this.gameId, { phase: new Round(result.val()).createNextPhase() }));
   }
 
   killPlayer(playerId) {
+    // TODO here it is probably useless to reload rounds
     return repository.getCurrentRound(this.gameId)
       .then((currentRound) => {
         const killedBy = currentRound.val().phase.subPhase.state;
@@ -36,6 +38,7 @@ class Round {
 
   archiveCurrentPhase() {
     const ref = repository.refCurrentRound(this.gameId);
+    // TODO here it is probably useless to reload phase
     return ref.child('phase').once('value').then((result) => {
       const currentPhase = result.val();
       const jsonContent = {};
@@ -46,6 +49,7 @@ class Round {
   }
 
   archive() {
+    // TODO here it is probably useless to reload rounds
     return repository.getCurrentRound(this.gameId)
       .then((currentRound) => {
         firebase.database().ref(`games/${this.gameId}/rounds/${currentRound.val().number}`).set(currentRound.val());

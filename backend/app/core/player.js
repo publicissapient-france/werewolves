@@ -29,10 +29,12 @@ class Player {
     return this.status === 'ALIVE';
   }
 
+  // TODO use repository
   setAlive() {
     return firebase.database().ref(`games/${this.gameId}/players/${this.id}`).update({ status: 'ALIVE' });
   }
 
+  // TODO use repository
   kill(killedBy, killedAt) {
     console.log(`= ${this.id} killed by ${killedBy} on ${killedAt}`);
     return firebase.database().ref(`games/${this.gameId}/players/${this.id}`)

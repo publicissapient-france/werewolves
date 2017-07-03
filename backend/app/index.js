@@ -28,6 +28,12 @@ app.get('/', (req, res) => {
   res.status(200).send('Basic page for the Werewolves game').end();
 });
 
+// GCloud Health Check
+app.get('/_ah/health', (req, res) => {
+  res.status(200)
+  res.send()
+})
+
 // Endpoint for home interactions
 app.post('/home', (req, res) => {
   console.log('Home request received');

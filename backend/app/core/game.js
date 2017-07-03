@@ -1,6 +1,4 @@
 const cards = require('../rules/cards');
-const firebase = require('../services/firebase').getFirebaseClient();
-const _ = require('lodash');
 const moment = require('moment');
 const Player = require('./player');
 const Votes = require('./votes');
@@ -65,6 +63,7 @@ class Game {
   }
 
   distributeRoles() {
+    // TODO here it is probably useless to reload players
     return repository.getAllPlayers(this.id)
       .then((players) => {
         const roles = [...cards.distribution[players.length]];
@@ -85,6 +84,7 @@ class Game {
 
   onReady() {
     return (childSnapshot) => {
+      // Reloading the game is necessary
       return repository.getGame(this.id).then((_game) => {
         let nbPlayersToWaitFor = _game.val().nbPlayers;
         const players = new Players(_game.val().players);
@@ -108,6 +108,7 @@ class Game {
   }
 
   advanceToNextPhase() {
+    // TODO here it is probably useless to reload the game
     return repository.getGame(this.id).then((game) => {
       if (game.val().rounds) {
         return this.currentRound().archiveCurrentPhase().then(() =>
@@ -168,6 +169,7 @@ class Game {
   }
 
   createNewPhase() {
+    // TODO here it is probably useless to reload rounds
     return repository.getCurrentRound(this.id)
       .then(result => repository.updateCurrentRound(this.id, {phase: new Round(result.val()).createNextPhase()}));
   }
@@ -236,6 +238,7 @@ class Game {
   }
 
   getRoundEndMessage() {
+    // TODO here it is probably useless to reload players
     return repository.getAlivePlayers(this.id)
       .then((players) => {
         if (players.getVillagers().length === 1) {
