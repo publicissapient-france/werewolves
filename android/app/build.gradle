@@ -32,7 +32,6 @@ dependencies {
     implementation "com.google.firebase:firebase-database:$firebaseVersion"
 
     testCompile 'junit:junit:4.12'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.0-beta1'
 }
 
 // ADD THIS AT THE BOTTOM
