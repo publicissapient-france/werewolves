@@ -8,6 +8,9 @@ const Phase = require('./phase');
 const Promise = require('bluebird');
 const repository = require('../services/repository');
 const numbers = require('../utils/numbers');
+const _ = require('lodash');
+
+const firebase = require('../../app/services/firebase').getFirebaseClient();
 
 Array.prototype.pickRandom = function pickRandom() {
   return this.splice(Math.floor(Math.random() * this.length), 1);
@@ -15,10 +18,52 @@ Array.prototype.pickRandom = function pickRandom() {
 
 class Game {
   constructor(deviceId, gameId) {
-    // Do not get id from data ...
     this.id = gameId || numbers.random();
     this.deviceId = deviceId;
   }
+
+  // Only used for test purpose
+  createPlayer(name) {
+    console.log(`- Test purpose, should not appear in production - Creating player ${name}`)
+    const player = new Player({deviceId: numbers.random(), name, gameId: this.id});
+    return repository.updatePlayer(player);
+  }
+
+  // Only used for test purpose
+  findKillable(role) {
+    const killables = _(this.players).filter(p => p.role === role && p.status !== 'DEAD').value();
+    if (killables.length > 0) {
+      return killables[0].name;
+    }
+  };
+
+  // Only used for test purpose
+  werewolvesVote() {
+    const waitTime = 0;
+    const werewolves = _(this.players).filter(p => p.role === "WEREWOLF" && p.status !== 'DEAD').value();
+    const villagerToKill = this.findKillable("VILLAGER");
+    const promises = [];
+    var i = 1;
+    werewolves.forEach((werewolf) => {
+      promises.push(new Promise((resolve) =>
+        setTimeout(() =>
+          firebase.database().ref().child(`games/${this.id}/rounds/current/phase/subPhase/votes/${werewolf.name}`).set({voted: `${villagerToKill}`})
+            .then(() => resolve()), waitTime * i)))
+      i++;
+    });
+    return Promise.all(promises);
+  };
+
+  // Only used for test purpose
+  villagersVote(roleToKill) {
+    const voters = _(this.players).filter(p => p.status !== 'DEAD').value();
+    const killed = this.findKillable(roleToKill);
+    const promises = [];
+    voters.forEach((voter) => {
+      promises.push(firebase.database().ref().child(`games/${this.id}/rounds/current/phase/subPhase/votes/${voter.name}`).set({voted: `${killed}`}))
+    });
+    return Promise.all(promises);
+  };
 
   create() {
     const json = {};
@@ -57,23 +102,17 @@ class Game {
       });
   }
 
-  createPlayer(name) {
-    const player = new Player({deviceId: numbers.random(), name, gameId: this.id});
-    return repository.updatePlayer(player);
-  }
-
   distributeRoles() {
-    // TODO here it is probably useless to reload players
-    return repository.getAllPlayers(this.id)
-      .then((players) => {
-        const roles = [...cards.distribution[players.length]];
-        return Promise.mapSeries(players, player =>
-            this.assignRole(player, roles.pickRandom().toString()))
-          .then(() => repository.updatePlayerCount(this.id, players.length));
-      });
+    console.log('= Distributing roles');
+    const players = _.keys(this.players);
+    const roles = [...cards.distribution[players.length]];
+    return Promise.mapSeries(players, player =>
+        this.assignRole(player, roles.pickRandom().toString()))
+      .then(() => repository.updatePlayerCount(this.id, players.length));
   }
 
   assignRole(player, role) {
+    console.log(`= Assign role ${role} to ${player}`)
     return new Player({id: player, gameId: this.id}).assignRole(role);
   }
 
@@ -83,11 +122,13 @@ class Game {
   }
 
   onReady() {
+    console.log('= Attach listener on players for value change')
     return (childSnapshot) => {
       // Reloading the game is necessary
       return repository.getGame(this.id).then((_game) => {
-        let nbPlayersToWaitFor = _game.val().nbPlayers;
+        const nbPlayersToWaitFor = _game.val().nbPlayers;
         const players = new Players(_game.val().players);
+
         if (players.getReadyCount() == nbPlayersToWaitFor) {
           repository.refPlayers(this.id).off();
           console.log(`= Everybody is ready`);
@@ -141,7 +182,7 @@ class Game {
   startNight() {
     return this.currentRound().archive()
       .then(() => this.createNewRound())
-      .then(round => round.createNewPhase())
+      .then(round => round.createNewPhase(this.currentRound()))
       .then(() => this.attachListenerForVotes('WEREWOLVES_VOTE'));
   }
 

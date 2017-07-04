@@ -23,4 +23,16 @@ const setAllPlayerReady = (deviceId) => {
     .then(() => console.log('Players ready'))
 };
 
-module.exports = {addAllPlayers, setAllPlayerReady};
+const makeWerewolvesVote = (deviceId) => {
+  return Game.loadByDeviceId(deviceId)
+    .then((game) => game.werewolvesVote())
+    .then(() => console.log('WerewolvesVote complete'))
+};
+
+const makeVillagersVote = (deviceId, role) => {
+  return Game.loadByDeviceId(deviceId)
+    .then((game) => game.villagersVote(role))
+    .then(() => console.log('VillagersVote complete'))
+};
+
+module.exports = {addAllPlayers, setAllPlayerReady, makeWerewolvesVote, makeVillagersVote};

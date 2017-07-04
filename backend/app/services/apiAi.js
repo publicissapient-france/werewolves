@@ -1,7 +1,6 @@
 const Game = require('../core/game');
 const repository = require('../services/repository');
 
-
 module.exports.apiAiActionMap = new Map();
 
 // Helpers

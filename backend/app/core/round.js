@@ -17,14 +17,13 @@ class Round {
     return new Phase({ state: 'NIGHT', subPhase: { state: 'WEREWOLVES_VOTE' } });
   }
 
-  createNewPhase() {
-    // TODO here it is probably useless to reload rounds
-    return repository.getCurrentRound(this.gameId)
-      .then(result => repository.updateCurrentRound(this.gameId, { phase: new Round(result.val()).createNextPhase() }));
-  }
+  createNewPhase(currentRound) {
+    repository.updateCurrentRound(this.gameId, { phase: new Round(currentRound).createNextPhase()})
+  };
 
-  killPlayer(playerId) {
+  killPlayer(playerId, currentRound) {
     // TODO here it is probably useless to reload rounds
+    // TODO not that simple
     return repository.getCurrentRound(this.gameId)
       .then((currentRound) => {
         const killedBy = currentRound.val().phase.subPhase.state;

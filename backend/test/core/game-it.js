@@ -3,40 +3,6 @@ const firebase = require('../../app/services/firebase').getFirebaseClient();
 const _ = require('lodash');
 const assert = require('assert');
 
-const findKillable = (gameId, players, role) => {
-  const killables = _(players).filter(p => p.role === role && p.status !== 'DEAD').value();
-  if (killables.length > 0) {
-    return killables[0].name;
-  }
-};
-
-const werewolvesVote = (gameId, players) => {
-  const waitTime = 0;
-  const werewolves = _(players).filter(p => p.role === "WEREWOLF" && p.status !== 'DEAD').value();
-  const villagerToKill = findKillable(gameId, players, "VILLAGER");
-  const promises = [];
-  var i = 1;
-  werewolves.forEach((werewolf) => {
-    promises.push(new Promise((resolve) =>
-      setTimeout(() =>
-        firebase.database().ref().child(`games/${gameId}/rounds/current/phase/subPhase/votes/${werewolf.name}`).set({voted: `${villagerToKill}`})
-          .then(() => resolve()), waitTime * i)))
-    i++;
-  });
-  return Promise.all(promises);
-};
-
-const villagersVote = (gameId, players, roleToKill) => {
-  const voters = _(players).filter(p => p.status !== 'DEAD').value();
-  const killed = findKillable(gameId, players, roleToKill);
-  const promises = [];
-  voters.forEach((voter) => {
-    promises.push(firebase.database().ref().child(`games/${gameId}/rounds/current/phase/subPhase/votes/${voter.name}`).set({voted: `${killed}`}))
-  });
-  return Promise.all(promises);
-};
-
-
 const assertWon = (game, done, status) => {
   console.log(_.map(game.players, p => `${p.name}\t\t${p.role}\t${p.status}`).join('\n'));
   if (game.status === status) {
@@ -64,28 +30,30 @@ describe('Game', () => {
           .then(() => game.createPlayer('benjamin_'))
           .then(() => game.createPlayer('pablo_'))
           .then(() => game.createPlayer('michael_'))
-          .then(() => game.distributeRoles())
-          .then(() => {
-            game.attachListenerForReadiness()
-            firebase.database().ref().child(`games/${game.id}/players/pablo_`).update({status: 'READYX'})
-            firebase.database().ref().child(`games/${game.id}/players/pablo_`).update({status: 'READY'})
-            firebase.database().ref().child(`games/${game.id}/players/benjamin_`).update({status: 'READY'})
-            firebase.database().ref().child(`games/${game.id}/players/qian_`).update({status: 'READY'})
-            firebase.database().ref().child(`games/${game.id}/players/michael_`).update({status: 'READY'})
-            firebase.database().ref().child(`games/${game.id}/players/julien_`).update({status: 'READY'})
-            firebase.database().ref().child(`games/${game.id}/players/jean_`).update({status: 'READY'})
-          })
-          .then(() => {
-            setTimeout(() => Game.loadById(game.id).then(_game => werewolvesVote(game.id, _game.players)), 3000);
-            setTimeout(() => Game.loadById(game.id).then(_game => _game.advanceToNextPhase()), 5000);
-            setTimeout(() => Game.loadById(game.id).then(_game => villagersVote(game.id, _game.players, "WEREWOLF")), 6000);
-            setTimeout(() => Game.loadById(game.id).then(_game => _game.advanceToNextPhase()), 8000);
-            setTimeout(() => Game.loadById(game.id).then(_game => werewolvesVote(game.id, _game.players)), 9000);
-            setTimeout(() => Game.loadById(game.id).then(_game => _game.advanceToNextPhase()), 11000);
-            setTimeout(() => Game.loadById(game.id).then(_game => villagersVote(game.id, _game.players, "WEREWOLF")), 12000);
-            setTimeout(() => Game.loadById(game.id).then(_game => _game.advanceToNextPhase()), 14000);
-            setTimeout(() => Game.loadById(game.id).then(_game => assertWon(_game, done, 'VILLAGERS_VICTORY')), 16000);
-          })
+          // this reload correspond to what happens with mobile device.
+          .then(() => Game.loadByDeviceId(deviceId))
+          .then((reloadedGame) => reloadedGame.distributeRoles()
+            .then(() => {
+              reloadedGame.attachListenerForReadiness()
+              firebase.database().ref().child(`games/${game.id}/players/pablo_`).update({status: 'READYX'})
+              firebase.database().ref().child(`games/${game.id}/players/pablo_`).update({status: 'READY'})
+              firebase.database().ref().child(`games/${game.id}/players/benjamin_`).update({status: 'READY'})
+              firebase.database().ref().child(`games/${game.id}/players/qian_`).update({status: 'READY'})
+              firebase.database().ref().child(`games/${game.id}/players/michael_`).update({status: 'READY'})
+              firebase.database().ref().child(`games/${game.id}/players/julien_`).update({status: 'READY'})
+              firebase.database().ref().child(`games/${game.id}/players/jean_`).update({status: 'READY'})
+            })
+            .then(() => {
+              setTimeout(() => Game.loadById(game.id).then(_game => _game.werewolvesVote()), 3000);
+              setTimeout(() => Game.loadById(game.id).then(_game => _game.advanceToNextPhase()), 5000);
+              setTimeout(() => Game.loadById(game.id).then(_game => _game.villagersVote("WEREWOLF")), 6000);
+              setTimeout(() => Game.loadById(game.id).then(_game => _game.advanceToNextPhase()), 8000);
+              setTimeout(() => Game.loadById(game.id).then(_game => _game.werewolvesVote()), 9000);
+              setTimeout(() => Game.loadById(game.id).then(_game => _game.advanceToNextPhase()), 11000);
+              setTimeout(() => Game.loadById(game.id).then(_game => _game.villagersVote("WEREWOLF")), 12000);
+              setTimeout(() => Game.loadById(game.id).then(_game => _game.advanceToNextPhase()), 14000);
+              setTimeout(() => Game.loadById(game.id).then(_game => assertWon(_game, done, 'VILLAGERS_VICTORY')), 16000);
+            }))
           .catch(done);
       });
 

@@ -1,7 +1,7 @@
-const firebase = require('../services/firebase').getFirebaseClient();
+const repository = require('../services/playerRepository');
 
 class Player {
-  constructor(data = { name: '', deviceId: '', gameId: '' }) {
+  constructor(data = {name: '', deviceId: '', gameId: ''}) {
     Object.assign(this, data);
   }
 
@@ -29,15 +29,13 @@ class Player {
     return this.status === 'ALIVE';
   }
 
-  // TODO use repository
   setAlive() {
-    return firebase.database().ref(`games/${this.gameId}/players/${this.id}`).update({ status: 'ALIVE' });
+    return repository.refPlayer(this.gameId, this.id).update({status: 'ALIVE'});
   }
 
-  // TODO use repository
   kill(killedBy, killedAt) {
     console.log(`= ${this.id} killed by ${killedBy} on ${killedAt}`);
-    return firebase.database().ref(`games/${this.gameId}/players/${this.id}`)
+    return repository.refPlayer(this.gameId, this.id)
       .update({
         status: 'DEAD',
         killedBy,
@@ -46,7 +44,7 @@ class Player {
   }
 
   assignRole(role) {
-    return firebase.database().ref(`games/${this.gameId}/players/${this.id}`).update({ role });
+    return repository.refPlayer(this.gameId, this.id).update({role});
   }
 }
 
