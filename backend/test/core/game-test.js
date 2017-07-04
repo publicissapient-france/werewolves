@@ -128,5 +128,17 @@ describe('Game - round chaining', () => {
     game.advanceToNextPhase()
     assert(firstNightStub.calledOnce);
   });
+
+  /*it('when current phase is a night, we should build a day', () => {
+    // Stub archive
+    // Stub victory conditions
+
+    const game = new Game();
+    Object.assign(game, {rounds: {current: {phase: {state: 'NIGHT'}}}});
+    var startDayStub = sandbox.stub(game, 'startDay');
+
+    game.advanceToNextPhase()
+    assert(startDayStub.calledOnce);
+  });*/
 })
 ;
