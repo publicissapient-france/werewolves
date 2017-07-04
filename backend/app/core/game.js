@@ -139,7 +139,11 @@ class Game {
   }
 
   begin() {
-    return Promise.mapSeries(repository.getAllPlayers(this.id), playerName => this.player(playerName).setAlive())
+    console.log('= Begin game');
+    return Promise.mapSeries(_.keys(this.players), playerName => {
+        console.log(`= ${playerName} is alive`);
+        this.player(playerName).setAlive()
+      })
       .then(() => repository.refPlayers(this.id).off())
       .then(() => this.advanceToNextPhase());
   }
@@ -149,24 +153,21 @@ class Game {
   }
 
   advanceToNextPhase() {
-    // TODO here it is probably useless to reload the game
-    return repository.getGame(this.id).then((game) => {
-      if (game.val().rounds) {
-        return this.currentRound().archiveCurrentPhase().then(() =>
-          this.getRoundEndMessage().then((endMessage) => {
-            if (endMessage) {
-              return this.endGame(endMessage);
-            }
-            const currentPhase = new Phase(game.val().rounds.current.phase);
+    if (this.rounds) {
+      return this.currentRound().archiveCurrentPhase().then(() =>
+        this.getRoundEndMessage().then((endMessage) => {
+          if (endMessage) {
+            return this.endGame(endMessage);
+          }
+          const currentPhase = new Phase(this.rounds.current.phase);
 
-            if (currentPhase.isDay()) {
-              return this.startNight();
-            }
-            return this.startDay();
-          }));
-      }
-      return this.startFirstNight();
-    });
+          if (currentPhase.isDay()) {
+            return this.startNight();
+          }
+          return this.startDay();
+        }));
+    }
+    return this.startFirstNight();
   }
 
   startFirstNight() {
