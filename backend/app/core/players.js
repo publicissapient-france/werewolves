@@ -14,16 +14,16 @@ class Players {
     return _(this.players).filter(player => player.isVillager()).value();
   }
 
-  getAliveCount() {
-    return _(this.players).filter(player => player.isAlive()).value().length;
+  getAlive() {
+    return _(this.players).filter(player => player.isAlive()).value();
   }
 
   getReadyCount() {
     return _(this.players).filter(player => player.isReady()).value().length;
   }
 
-  getAliveWerewolvesCount() {
-    return _(this.players).filter(player => player.isAliveWerewolf()).value().length;
+  getAliveWerewolves() {
+    return _(this.players).filter(player => player.isAliveWerewolf()).value();
   }
 
   findKillable(role) {

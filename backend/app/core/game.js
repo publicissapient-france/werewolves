@@ -47,8 +47,8 @@ class Game {
   // Only used for test purpose
   werewolvesVote() {
     const waitTime = 0;
-    const werewolves = _(this.players).filter(p => p.role === "WEREWOLF" && p.status !== 'DEAD').value();
-    const villagerToKill = this.findKillable("VILLAGER");
+    const werewolves = this.getPlayers().getAliveWerewolves();
+    const villagerToKill = this.getPlayers().findKillable("VILLAGER");
     const promises = [];
     var i = 1;
     werewolves.forEach((werewolf) => {
@@ -63,8 +63,8 @@ class Game {
 
   // Only used for test purpose
   villagersVote(roleToKill) {
-    const voters = _(this.players).filter(p => p.status !== 'DEAD').value();
-    const killed = this.findKillable(roleToKill);
+    const voters = this.getPlayers().getAlive();
+    const killed = this.getPlayers().findKillable(roleToKill);
     const promises = [];
     voters.forEach((voter) => {
       promises.push(firebase.database().ref().child(`games/${this.id}/rounds/current/phase/subPhase/votes/${voter.name}`).set({voted: `${killed}`}))
@@ -278,7 +278,7 @@ class Game {
         const votes = new Votes(result.val().rounds.current.phase.subPhase.votes);
         const players = new Players(result.val().players);
         // If vote is complete
-        if (voteType == 'WEREWOLVES_VOTE' && votes.countVotes() == players.getAliveWerewolvesCount()) {
+        if (voteType == 'WEREWOLVES_VOTE' && votes.countVotes() == players.getAliveWerewolves().length) {
           // Remove listener
           repository.refCurrentVotes(this.id).off();
           const votesResults = votes.getMajority();
@@ -299,7 +299,7 @@ class Game {
             .then(() => repository.updateDeviceStatus(this.deviceId, "WEREWOLVES_VOTE_COMPLETED"))
             .then(() => resolve(repository.updateGameStatus(this.id, "WEREWOLVES_VOTE_COMPLETED")))
             .then(() => this.attachListenerForStatus());
-        } else if (voteType == 'VILLAGERS_VOTE' && votes.countVotes() == players.getAliveCount()) {
+        } else if (voteType == 'VILLAGERS_VOTE' && votes.countVotes() == players.getAlive().length) {
           repository.refCurrentVotes(this.id).off();
           const votesResults = votes.getMajority()
           console.log('= All villagers voted', votesResults);
