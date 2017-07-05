@@ -50,15 +50,15 @@ describe('Game', () => {
     const deviceId = 'test_1';
 
     initiateGame(deviceId).then((game) => {
-        setTimeout(() => Game.loadById(game.id).then(_game => _game.werewolvesVote()), 3000);
-        setTimeout(() => Game.loadById(game.id).then(_game => _game.advanceToNextPhase()), 5000);
+        setTimeout(() => Game.loadByDeviceId(deviceId).then(_game => _game.werewolvesVote()), 2000);
+        setTimeout(() => Game.loadByDeviceId(deviceId).then(_game => _game.setStatusAdvanceToNextPhase()), 4000);
         setTimeout(() => Game.loadById(game.id).then(_game => _game.villagersVote("WEREWOLF")), 6000);
-        setTimeout(() => Game.loadById(game.id).then(_game => _game.advanceToNextPhase()), 8000);
+        setTimeout(() => Game.loadById(game.id).then(_game => _game.setStatusAdvanceToNextPhase()), 8000);
         setTimeout(() => Game.loadById(game.id).then(_game => _game.werewolvesVote()), 10000);
-        setTimeout(() => Game.loadById(game.id).then(_game => _game.advanceToNextPhase()), 11000);
-        setTimeout(() => Game.loadById(game.id).then(_game => _game.villagersVote("WEREWOLF")), 12000);
-        setTimeout(() => Game.loadById(game.id).then(_game => _game.advanceToNextPhase()), 14000);
-        setTimeout(() => Game.loadById(game.id).then(_game => assertWon(_game, done, 'VILLAGERS_VICTORY')), 16000);
+        setTimeout(() => Game.loadById(game.id).then(_game => _game.setStatusAdvanceToNextPhase()), 12000);
+        setTimeout(() => Game.loadById(game.id).then(_game => _game.villagersVote("WEREWOLF")), 14000);
+        setTimeout(() => Game.loadById(game.id).then(_game => _game.setStatusAdvanceToNextPhase()), 16000);
+        setTimeout(() => Game.loadById(game.id).then(_game => assertWon(_game, done, 'VILLAGERS_VICTORY')), 18000);
       })
       .catch(done);
   });
@@ -66,12 +66,12 @@ describe('Game', () => {
   it('Werewolves should win !', (done) => {
     const deviceId = 'test_2';
     initiateGame(deviceId).then((game) => {
-        setTimeout(() => Game.loadById(game.id).then(_game => _game.werewolvesVote()), 3000);
-        setTimeout(() => Game.loadById(game.id).then(_game => _game.advanceToNextPhase()), 5000);
+        setTimeout(() => Game.loadById(game.id).then(_game => _game.werewolvesVote()), 2000);
+        setTimeout(() => Game.loadById(game.id).then(_game => _game.setStatusAdvanceToNextPhase()), 4000);
         setTimeout(() => Game.loadById(game.id).then(_game => _game.villagersVote("VILLAGER")), 6000);
-        setTimeout(() => Game.loadById(game.id).then(_game => _game.advanceToNextPhase()), 8000);
+        setTimeout(() => Game.loadById(game.id).then(_game => _game.setStatusAdvanceToNextPhase()), 8000);
         setTimeout(() => Game.loadById(game.id).then(_game => _game.werewolvesVote()), 10000);
-        setTimeout(() => Game.loadById(game.id).then(_game => _game.advanceToNextPhase()), 12000);
+        setTimeout(() => Game.loadById(game.id).then(_game => _game.setStatusAdvanceToNextPhase()), 12000);
         setTimeout(() => Game.loadById(game.id).then(_game => assertWon(_game, done, 'WEREWOLVES_VICTORY')), 14000);
       })
       .catch(done);

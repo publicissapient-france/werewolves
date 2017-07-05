@@ -65,6 +65,11 @@ class Game {
     return Promise.all(promises);
   };
 
+  // Only used for test purpose
+  setStatusAdvanceToNextPhase() {
+    return repository.refGame(this.id).update({status: 'ADVANCE_TO_NEXT_PHASE'})
+  };
+
   create() {
     const json = {};
     json[this.id] = {
@@ -114,6 +119,25 @@ class Game {
   assignRole(player, role) {
     console.log(`= Assign role ${role} to ${player}`)
     return new Player({id: player, gameId: this.id}).assignRole(role);
+  }
+
+  attachListenerForStatus() {
+    console.log('= Wait For Status to change ...');
+    return new Promise((resolve, reject) => repository.refGame(this.id).child('status').on('value', this.onChangeStatus(resolve, reject)));
+  }
+
+  onChangeStatus() {
+    console.log('= Attach listener on status for value change')
+    return (childSnapshot) => {
+      // Reloading the game is necessary
+      if (childSnapshot.val() == "ADVANCE_TO_NEXT_PHASE") {
+        return repository.getGame(this.id).then((_game) => {
+          Object.assign(this, _game.val());
+          repository.refGame(this.id).child('status').off();
+          this.advanceToNextPhase();
+        })
+      }
+    }
   }
 
   attachListenerForReadiness() {
@@ -258,7 +282,8 @@ class Game {
             }))
             .then(() => repository.makeDeviceTalkToHome(this.id))
             .then(() => repository.updateDeviceStatus(this.deviceId, "WEREWOLVES_VOTE_COMPLETED"))
-            .then(() => resolve(repository.updateGameStatus(this.id, "WEREWOLVES_VOTE_COMPLETED")));
+            .then(() => resolve(repository.updateGameStatus(this.id, "WEREWOLVES_VOTE_COMPLETED")))
+            .then(() => this.attachListenerForStatus());
         } else if (voteType == 'VILLAGERS_VOTE' && votes.countVotes() == players.getAliveCount()) {
           repository.refCurrentVotes(this.id).off();
           const votesResults = votes.getMajority()
@@ -267,7 +292,8 @@ class Game {
           this.killPlayer(votesResults[0])
             .then(() => repository.makeDeviceTalkToHome(this.id))
             .then(() => repository.updateDeviceStatus(this.deviceId, "VILLAGERS_VOTE_COMPLETED"))
-            .then(() => resolve(repository.updateGameStatus(this.id, "VILLAGERS_VOTE_COMPLETED")));
+            .then(() => resolve(repository.updateGameStatus(this.id, "VILLAGERS_VOTE_COMPLETED")))
+            .then(() => this.attachListenerForStatus());
         }
       });
     };
@@ -294,4 +320,5 @@ class Game {
   }
 }
 
-module.exports = Game;
+module
+  .exports = Game;
