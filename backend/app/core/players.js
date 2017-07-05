@@ -25,6 +25,13 @@ class Players {
   getAliveWerewolvesCount() {
     return _(this.players).filter(player => player.isAliveWerewolf()).value().length;
   }
+
+  findKillable(role) {
+    const killables = _(this.players).filter(p => p.role === role && p.status !== 'DEAD').value();
+    if (killables.length > 0) {
+      return killables[0].name;
+    }
+  };
 }
 
 module.exports = Players;

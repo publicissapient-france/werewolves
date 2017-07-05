@@ -17,7 +17,7 @@ describe('Game', () => {
   const gamesToDelete = [];
 
   const initiateGame = (deviceId) => {
-    return new Game(deviceId).create()
+    return new Game({deviceId}).create()
       .then((game) => {
         gamesToDelete.push(game.id);
         console.log(`= Game: ${game.id}`);

@@ -47,8 +47,12 @@ class Round {
 
   archive() {
     this[this.phase.state] = this.phase;
-    this.phase = null
-    firebase.database().ref(`games/${this.gameId}/rounds/${this.number}`).set({NIGHT: this.NIGHT, DAY: this.DAY})
+    this.phase = null;
+    var archivedObject = {NIGHT: this.NIGHT};
+    if (this.DAY) {
+      archivedObject.DAY = this.DAY;
+    }
+    firebase.database().ref(`games/${this.gameId}/rounds/${this.number}`).set(archivedObject)
     // BUGGED @jsmadja
     // repository.refRound(this.gameId, currentRound.val().number).set(currentRound.val())
     // TODO also remove in the object

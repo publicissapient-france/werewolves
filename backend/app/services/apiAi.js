@@ -92,6 +92,7 @@ function getUserId(assistant) {
 
 const createGame = (assistant) => {
   console.log('Creating game');
+  // TODO to be modified
   new Game(getUserId(assistant)).create().then((game) => {
     console.log('Game id is', game.id);
     const message = newCreateMessage(assistant, game.id);

@@ -17,9 +17,19 @@ Array.prototype.pickRandom = function pickRandom() {
 };
 
 class Game {
-  constructor(deviceId, gameId) {
-    this.id = gameId || numbers.random();
-    this.deviceId = deviceId;
+  constructor(data = {}) {
+    Object.assign(this, data);
+    this.id = data.id || numbers.random();
+
+    // rounds should be an object
+    // players should be an object
+    if (this.players) {
+      this.playersAsObject = new Players(this.players)
+    }
+  }
+
+  getPlayers() {
+    return this.playersAsObject;
   }
 
   // Only used for test purpose
@@ -31,10 +41,7 @@ class Game {
 
   // Only used for test purpose
   findKillable(role) {
-    const killables = _(this.players).filter(p => p.role === role && p.status !== 'DEAD').value();
-    if (killables.length > 0) {
-      return killables[0].name;
-    }
+    return this.getPlayers().findKillable(role)
   };
 
   // Only used for test purpose
@@ -93,8 +100,10 @@ class Game {
   }
 
   static loadById(id) {
-    return repository.getGame(id).then(game => {
-      return Object.assign(new Game(game.val().deviceId, id), game.val())
+    return repository.getGame(id).then(_game => {
+      const game = _game.val();
+      game.id = id;
+      return new Game(game)
     });
   }
 
@@ -326,5 +335,4 @@ class Game {
   }
 }
 
-module
-  .exports = Game;
+module.exports = Game;
