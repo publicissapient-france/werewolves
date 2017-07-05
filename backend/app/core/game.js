@@ -178,18 +178,18 @@ class Game {
 
   advanceToNextPhase() {
     if (this.rounds) {
-      return this.currentRound().archiveCurrentPhase().then(() =>
-        this.getRoundEndMessage().then((endMessage) => {
-          if (endMessage) {
-            return this.endGame(endMessage);
-          }
-          const currentPhase = new Phase(this.rounds.current.phase);
+      const currentRound = this.currentRound();
+      return this.getRoundEndMessage().then((endMessage) => {
+        if (endMessage) {
+          return this.endGame(endMessage);
+        }
+        const currentPhase = new Phase(currentRound.phase);
 
-          if (currentPhase.isDay()) {
-            return this.startNight();
-          }
-          return this.startDay();
-        }));
+        if (currentPhase.isDay()) {
+          return this.startNight();
+        }
+        return this.startDay();
+      });
     }
     return this.startFirstNight();
   }
@@ -199,16 +199,17 @@ class Game {
       .then(() => this.attachListenerForVotes('WEREWOLVES_VOTE'));
   }
 
-  startDay() {
-    return this.createNewPhase()
-      .then(() => this.attachListenerForVotes('VILLAGERS_VOTE'));
-  }
-
   startNight() {
     return this.currentRound().archive()
       .then(() => this.createNewRound())
       .then(round => round.createNewPhase(this.currentRound()))
       .then(() => this.attachListenerForVotes('WEREWOLVES_VOTE'));
+  }
+
+  startDay() {
+    return this.currentRound().archiveCurrentPhase()
+      .then(this.createNewPhase())
+      .then(() => this.attachListenerForVotes('VILLAGERS_VOTE'));
   }
 
   endGame(endMessage) {
@@ -219,6 +220,11 @@ class Game {
   }
 
   currentRound() {
+    if (this.rounds && this.rounds.current) {
+      const value = this.rounds.current
+      value.gameId = this.id
+      return new Round(value);
+    }
     return new Round({gameId: this.id});
   }
 
@@ -234,10 +240,10 @@ class Game {
       });
   }
 
+  // Should be a ROUND method ?
   createNewPhase() {
-    // TODO here it is probably useless to reload rounds
-    return repository.getCurrentRound(this.id)
-      .then(result => repository.updateCurrentRound(this.id, {phase: new Round(result.val()).createNextPhase()}));
+    const currentRound = new Round(this.currentRound());
+    return repository.updateCurrentRound(this.id, {phase: currentRound.createNextPhase()});
   }
 
   attachListenerForVotes(voteType) {

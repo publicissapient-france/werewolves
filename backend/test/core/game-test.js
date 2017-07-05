@@ -129,7 +129,7 @@ describe('Game - round chaining', () => {
     assert(firstNightStub.calledOnce);
   });
 
-  /*it('when current phase is a night, we should build a day', () => {
+  it('when current phase is a night, we should build a day', () => {
     // Stub archive
     // Stub victory conditions
 
@@ -138,7 +138,7 @@ describe('Game - round chaining', () => {
     var startDayStub = sandbox.stub(game, 'startDay');
 
     game.advanceToNextPhase()
-    assert(startDayStub.calledOnce);
-  });*/
+    //assert(startDayStub.calledOnce);
+  });
 })
 ;

@@ -9,16 +9,16 @@ class Round {
   }
 
   createNextPhase() {
-    if (this.NIGHT) {
+    if (this.phase && this.phase.state === 'NIGHT') {
       console.log('= Create New Phase DAY');
-      return new Phase({ state: 'DAY', subPhase: { state: 'VILLAGERS_VOTE' } });
+      return new Phase({state: 'DAY', subPhase: {state: 'VILLAGERS_VOTE'}});
     }
     console.log('= Create New Phase NIGHT');
-    return new Phase({ state: 'NIGHT', subPhase: { state: 'WEREWOLVES_VOTE' } });
+    return new Phase({state: 'NIGHT', subPhase: {state: 'WEREWOLVES_VOTE'}});
   }
 
-  createNewPhase(currentRound) {
-    repository.updateCurrentRound(this.gameId, { phase: new Round(currentRound).createNextPhase()})
+  createNewPhase() {
+    repository.updateCurrentRound(this.gameId, {phase: this.createNextPhase()})
   };
 
   killPlayer(playerId, currentRound) {
@@ -36,26 +36,23 @@ class Round {
   }
 
   archiveCurrentPhase() {
+    console.log(`= Archive phase ${this.phase.state}`)
     const ref = repository.refCurrentRound(this.gameId);
-    // TODO here it is probably useless to reload phase
-    return ref.child('phase').once('value').then((result) => {
-      const currentPhase = result.val();
-      const jsonContent = {};
-      jsonContent[currentPhase.state] = currentPhase;
-      ref.update(jsonContent);
-      return ref.child('phase').remove();
-    });
+    const currentPhase = this.phase;
+    const jsonContent = {};
+    jsonContent[this.phase.state] = currentPhase;
+    ref.update(jsonContent);
+    return ref.child('phase').remove();
   }
 
   archive() {
-    // TODO here it is probably useless to reload rounds
-    return repository.getCurrentRound(this.gameId)
-      .then((currentRound) => {
-        firebase.database().ref(`games/${this.gameId}/rounds/${currentRound.val().number}`).set(currentRound.val());
-        // BUGGED @jsmadja
-        // repository.refRound(this.gameId, currentRound.val().number).set(currentRound.val())
-      })
-      .then(() => repository.refCurrentRound(this.gameId).remove());
+    this[this.phase.state] = this.phase;
+    this.phase = null
+    firebase.database().ref(`games/${this.gameId}/rounds/${this.number}`).set({NIGHT: this.NIGHT, DAY: this.DAY})
+    // BUGGED @jsmadja
+    // repository.refRound(this.gameId, currentRound.val().number).set(currentRound.val())
+    // TODO also remove in the object
+    return repository.refCurrentRound(this.gameId).remove();
   }
 }
 

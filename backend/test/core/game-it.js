@@ -77,7 +77,7 @@ describe('Game', () => {
       .catch(done);
   });
 
-  after(() => {
+  /*after(() => {
     const promises = []
     gamesToDelete.forEach(
       gameId => promises.push(firebase.database().ref().child(`games/${gameId}`).remove())
@@ -85,6 +85,6 @@ describe('Game', () => {
     promises.push(firebase.database().ref().child(`devices/test_1`).remove());
     promises.push(firebase.database().ref().child(`devices/test_2`).remove());
     return Promise.all(promises);
-  });
+  });*/
 })
 ;
