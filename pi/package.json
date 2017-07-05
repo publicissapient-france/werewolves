@@ -1,0 +1,43 @@
+{
+  "name": "loups-garous-pi",
+  "version": "1.0.0",
+  "description": "backend on Pi to communicate with Hue and Cast",
+  "main": "app/index.js",
+  "scripts": {
+    "dev": "NODE_ENV=development nodemon app/index.js",
+    "start": "NODE_ENV=production node app/index.js",
+    "test": "mocha --recursive --timeout 10000 test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xebia-france/werewolves/"
+  },
+  "keywords": [
+    "node",
+    "javascript",
+    "hue",
+    "firebase"
+  ],
+  "author": "Xebia",
+  "license": "MIT",
+  "devDependencies": {
+    "chai": "4.0.2",
+    "eslint": "4.1.1",
+    "eslint-config-airbnb-base": "11.2.0",
+    "eslint-plugin-import": "2.6.1",
+    "mocha": "3.4.2",
+    "nodemon": "1.11.0",
+    "npm-check": "5.4.4",
+    "sinon": "2.3.6"
+  },
+  "dependencies": {
+    "bluebird": "3.5.0",
+    "express": "4.15.3",
+    "firebase": "4.1.3",
+    "winston": "2.3.1"
+  },
+  "engines": {
+    "node": "6.10.0",
+    "npm": "3.9.5"
+  }
+}
