@@ -1,71 +1,88 @@
 const Client = require('castv2-client').Client;
 const DefaultMediaReceiver = require('castv2-client').DefaultMediaReceiver;
 const mdns = require('mdns');
+const Promise = require('bluebird');
+const EventEmitter = require('events');
+
 const logger = require('../logger');
 
 class TalkService {
-  talk() {
-    this.browser = mdns.createBrowser(mdns.tcp('googlecast'));
-    this.browser.on('serviceUp', (service) => {
-      logger.info(`found device ${service.name} at ${service.addresses[0]}:${service.port}`);
-      TalkService.onServiceUp(service);
-    });
-    this.browser.on('serviceDown', (service) => {
-      logger.info(`service down ${service}`);
-    });
-    this.browser.start();
+  constructor() {
+    this.player = null;
+    this.client = null;
+    this.browser = null;
+    this.status = null;
+    this.emitter = new EventEmitter();
   }
 
-  static onServiceUp(service) {
-    const client = new Client();
+  connect() {
+    return new Promise((resolve, reject) => {
+      this.browser = mdns.createBrowser(mdns.tcp('googlecast'));
+      this.browser.on('serviceUp', (service) => {
+        logger.info(`found device ${service.name} at ${service.addresses[0]}:${service.port}`);
+        this.launchMediaReceiver(service, resolve, reject);
+      });
+      this.browser.on('serviceDown', (service) => {
+        logger.info(`service down ${service}`);
+      });
+      this.browser.start();
+    });
+  }
 
-    client.connect(service.addresses[0], () => {
+  launchMediaReceiver(service, resolve, reject) {
+    this.client = new Client();
+
+    this.client.connect(service.addresses[0], () => {
       logger.info(`connected to ${service.name}, launching app`);
 
-      client.launch(DefaultMediaReceiver, (err, player) => {
+      this.client.launch(DefaultMediaReceiver, (err, player) => {
         if (err) {
           logger.error(`an error occurred ${err.message}`);
-          client.close();
+          this.client.close();
+          reject(err);
           return;
         }
 
-        const media = {
-          contentId: 'http://www.memoclic.com/medias/sons-wav/2/729.wav',
-          contentType: 'audio/wav',
-          streamType: 'BUFFERED',
-          metadata: {
-            type: 0,
-            metadataType: 0,
-            title: 'Big Buck Bunny',
-            images: [
-              {
-                url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg',
-              },
-            ],
-          },
-        };
+        this.player = player;
 
-        player.on('status', status => logger.info(`status broadcast player state ${status.playerState}`));
-
-        logger.info(`app ${player.session.displayName} launched, loading media ${media.contentId}...`);
-
-        player.load(media, {
-          autoplay: true,
-        }, (err2, status) => {
-          if (err2) {
-            logger.error(`an error occurred ${err.message}`);
-            client.close();
+        this.player.on('status', (status) => {
+          logger.info(`status broadcast player state ${status.playerState}`);
+          if (this.status === 'PLAYING' && status.playerState === 'IDLE') {
+            logger.info('sending end event');
+            this.emitter.emit('end');
             return;
           }
-          logger.info(`media loaded player state ${status.playerState}`);
+          this.status = status.playerState;
         });
+
+        resolve();
       });
 
-      client.on('error', (err) => {
+      this.client.on('error', (err) => {
         logger.error(`an error occurred ${err.message}`);
-        client.close();
+        this.client.close();
+        reject(err);
       });
     });
+  }
+
+  talk(media) {
+    logger.info(`app ${this.player.session.displayName} launched, loading media ${media.contentId}...`);
+    this.player.load(media, {
+      autoplay: true,
+    }, (err2, status) => {
+      if (err2) {
+        logger.error(`an error occurred ${err2.message}`);
+        this.client.close();
+        return;
+      }
+      logger.info(`media loaded player state ${status.playerState}`);
+    });
+  }
+
+  disconnect() {
+    logger.info('disconnecting');
+    this.client.close();
   }
 }
 
