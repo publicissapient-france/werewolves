@@ -2,7 +2,6 @@ const Client = require('castv2-client').Client;
 const DefaultMediaReceiver = require('castv2-client').DefaultMediaReceiver;
 const mdns = require('mdns');
 const Promise = require('bluebird');
-const EventEmitter = require('events');
 
 const logger = require('../logger');
 
@@ -12,7 +11,8 @@ class TalkService {
     this.client = null;
     this.browser = null;
     this.status = null;
-    this.emitter = new EventEmitter();
+    this.resolve = null;
+    this.reject = null;
   }
 
   connect() {
@@ -48,8 +48,8 @@ class TalkService {
         this.player.on('status', (status) => {
           logger.info(`status broadcast player state ${status.playerState}`);
           if (this.status === 'PLAYING' && status.playerState === 'IDLE') {
-            logger.info('sending end event');
-            this.emitter.emit('end');
+            this.status = null;
+            this.resolve();
             return;
           }
           this.status = status.playerState;
@@ -68,15 +68,20 @@ class TalkService {
 
   talk(media) {
     logger.info(`app ${this.player.session.displayName} launched, loading media ${media.contentId}...`);
-    this.player.load(media, {
-      autoplay: true,
-    }, (err2, status) => {
-      if (err2) {
-        logger.error(`an error occurred ${err2.message}`);
-        this.client.close();
-        return;
-      }
-      logger.info(`media loaded player state ${status.playerState}`);
+    return new Promise((resolve, reject) => {
+      this.resolve = resolve;
+      this.reject = reject;
+      this.player.load(media, {
+        autoplay: true,
+      }, (err2, status) => {
+        if (err2) {
+          logger.error(`an error occurred ${err2.message}`);
+          this.client.close();
+          this.reject();
+          return;
+        }
+        logger.info(`media loaded player state ${status.playerState}`);
+      });
     });
   }
 

@@ -12,28 +12,13 @@ describe('Play WAV', () => {
         contentId: 'http://www.wavsource.com/snds_2017-06-18_4861080274558637/movies/aladdin/aladdin_cant_believe.wav',
         contentType: 'audio/wav',
         streamType: 'BUFFERED',
-        metadata: {
-          type: 0,
-          metadataType: 0,
-          title: 'Big Buck Bunny',
-          images: [
-            {
-              url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg',
-            },
-          ],
-        },
       };
-
-      service.emitter.on('end', () => {
-        service.disconnect();
-        done();
-      });
 
       service.connect()
         .then(() => service.talk(media))
+        .then(() => service.talk(media))
+        .then(() => service.disconnect())
+        .then(() => done())
         .catch(done);
-
-      setTimeout(() => {
-      }, 20000);
     });
 });
