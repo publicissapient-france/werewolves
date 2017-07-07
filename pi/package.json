@@ -16,7 +16,8 @@
     "node",
     "javascript",
     "hue",
-    "firebase"
+    "firebase",
+    "tts"
   ],
   "author": "Xebia",
   "license": "MIT",
@@ -37,6 +38,7 @@
     "firebase": "4.1.3",
     "mdns": "2.3.3",
     "moment": "2.18.1",
+    "text-to-mp3": "1.0.3",
     "winston": "2.3.1"
   },
   "engines": {
