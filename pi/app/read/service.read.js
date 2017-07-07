@@ -11,7 +11,9 @@ class TTSService {
       .replace(/[^a-zA-Z0-9_]/g, '')
       .replace(/__+/g, '_');
 
-    return `${cleanText}.${extension}`;
+    const filename = `${cleanText}.${extension}`;
+    logger.info(`normalized filename ${filename}`);
+    return filename;
   }
 
   static read(text) {
