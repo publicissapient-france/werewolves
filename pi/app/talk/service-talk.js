@@ -66,8 +66,13 @@ class TalkService {
     });
   }
 
-  talk(media) {
-    logger.info(`app ${this.player.session.displayName} launched, loading media ${media.contentId}...`);
+  talk(contentId) {
+    const media = {
+      contentId,
+      contentType: 'audio/mp3',
+      streamType: 'BUFFERED',
+    };
+    logger.info(`app ${this.player.session.displayName} launched, loading media ${contentId}...`);
     return new Promise((resolve, reject) => {
       this.resolve = resolve;
       this.reject = reject;
@@ -88,6 +93,7 @@ class TalkService {
   disconnect() {
     logger.info('disconnecting');
     this.client.close();
+    this.browser.stop();
   }
 }
 
