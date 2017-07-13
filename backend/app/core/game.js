@@ -24,7 +24,7 @@ class Game {
     // rounds should be an object
     // players should be an object
     if (this.players) {
-      this.playersAsObject = new Players(this.players)
+      this.playersAsObject = new Players(this.players);
     }
   }
 
@@ -34,32 +34,32 @@ class Game {
 
   // Only used for test purpose
   createPlayer(name) {
-    console.log(`- Test purpose, should not appear in production - Creating player ${name}`)
-    const player = new Player({deviceId: numbers.random(), name, gameId: this.id});
+    console.log(`- Test purpose, should not appear in production - Creating player ${name}`);
+    const player = new Player({ deviceId: numbers.random(), name, gameId: this.id });
     return repository.updatePlayer(player);
   }
 
   // Only used for test purpose
   findKillable(role) {
-    return this.getPlayers().findKillable(role)
-  };
+    return this.getPlayers().findKillable(role);
+  }
 
   // Only used for test purpose
   werewolvesVote() {
     const waitTime = 0;
     const werewolves = this.getPlayers().getAliveWerewolves();
-    const villagerToKill = this.getPlayers().findKillable("VILLAGER");
+    const villagerToKill = this.getPlayers().findKillable('VILLAGER');
     const promises = [];
-    var i = 1;
+    let i = 1;
     werewolves.forEach((werewolf) => {
-      promises.push(new Promise((resolve) =>
+      promises.push(new Promise(resolve =>
         setTimeout(() =>
-          firebase.database().ref().child(`games/${this.id}/rounds/current/phase/subPhase/votes/${werewolf.name}`).set({voted: `${villagerToKill}`})
-            .then(() => resolve()), waitTime * i)))
+          firebase.database().ref().child(`games/${this.id}/rounds/current/phase/subPhase/votes/${werewolf.name}`).set({ voted: `${villagerToKill}` })
+          .then(() => resolve()), waitTime * i)));
       i++;
     });
     return Promise.all(promises);
-  };
+  }
 
   // Only used for test purpose
   villagersVote(roleToKill) {
@@ -67,15 +67,15 @@ class Game {
     const killed = this.getPlayers().findKillable(roleToKill);
     const promises = [];
     voters.forEach((voter) => {
-      promises.push(firebase.database().ref().child(`games/${this.id}/rounds/current/phase/subPhase/votes/${voter.name}`).set({voted: `${killed}`}))
+      promises.push(firebase.database().ref().child(`games/${this.id}/rounds/current/phase/subPhase/votes/${voter.name}`).set({ voted: `${killed}` }));
     });
     return Promise.all(promises);
-  };
+  }
 
   // Only used for test purpose
   setStatusAdvanceToNextPhase() {
-    return repository.refGame(this.id).update({status: 'ADVANCE_TO_NEXT_PHASE'})
-  };
+    return repository.refGame(this.id).update({ status: 'ADVANCE_TO_NEXT_PHASE' });
+  }
 
   create() {
     const json = {};
@@ -87,33 +87,33 @@ class Game {
       roundNumber: 0,
     };
     return repository.updateGames(json)
-      .then(() => this);
+    .then(() => this);
   }
 
   static loadByDeviceId(deviceId) {
-    return repository.getDevice(deviceId).then(device => {
+    return repository.getDevice(deviceId).then((device) => {
       if (device && device.val()) {
-        return this.loadById(device.val().gameId)
+        return this.loadById(device.val().gameId);
       }
       return null;
     });
   }
 
   static loadById(id) {
-    return repository.getGame(id).then(_game => {
+    return repository.getGame(id).then((_game) => {
       const game = _game.val();
       game.id = id;
-      return new Game(game)
+      return new Game(game);
     });
   }
 
   associateUserIdToGame() {
     return repository.getDevices().child(this.deviceId)
-      .set({
-        startDate: moment().format(),
-        gameId: this.id,
-        status: 'INITIAL',
-      });
+    .set({
+      startDate: moment().format(),
+      gameId: this.id,
+      status: 'INITIAL',
+    });
   }
 
   distributeRoles() {
@@ -121,13 +121,13 @@ class Game {
     const players = _.keys(this.players);
     const roles = [...cards.distribution[players.length]];
     return Promise.mapSeries(players, player =>
-        this.assignRole(player, roles.pickRandom().toString()))
-      .then(() => repository.updatePlayerCount(this.id, players.length));
+      this.assignRole(player, roles.pickRandom().toString()))
+    .then(() => repository.updatePlayerCount(this.id, players.length));
   }
 
   assignRole(player, role) {
-    console.log(`= Assign role ${role} to ${player}`)
-    return new Player({id: player, gameId: this.id}).assignRole(role);
+    console.log(`= Assign role ${role} to ${player}`);
+    return new Player({ id: player, gameId: this.id }).assignRole(role);
   }
 
   attachListenerForStatus() {
@@ -136,17 +136,17 @@ class Game {
   }
 
   onChangeStatus() {
-    console.log('= Attach listener on status for value change')
+    console.log('= Attach listener on status for value change');
     return (childSnapshot) => {
       // Reloading the game is necessary
-      if (childSnapshot.val() == "ADVANCE_TO_NEXT_PHASE") {
+      if (childSnapshot.val() === 'ADVANCE_TO_NEXT_PHASE') {
         return repository.getGame(this.id).then((_game) => {
           Object.assign(this, _game.val());
           repository.refGame(this.id).child('status').off();
-          this.advanceToNextPhase();
-        })
+          return this.advanceToNextPhase();
+        });
       }
-    }
+    };
   }
 
   attachListenerForReadiness() {
@@ -155,34 +155,31 @@ class Game {
   }
 
   onReady() {
-    console.log('= Attach listener on players for value change')
-    return (childSnapshot) => {
-      // Reloading the game is necessary
-      return repository.getGame(this.id).then((_game) => {
+    console.log('= Attach listener on players for value change');
+    return () =>
+      repository.getGame(this.id).then((_game) => {
         const nbPlayersToWaitFor = _game.val().nbPlayers;
         const players = new Players(_game.val().players);
-
-        if (players.getReadyCount() == nbPlayersToWaitFor) {
+        if (players.getReadyCount() === nbPlayersToWaitFor) {
           repository.refPlayers(this.id).off();
-          console.log(`= Everybody is ready`);
+          console.log('= Everybody is ready');
           return this.begin();
         }
       });
-    }
   }
 
   begin() {
     console.log('= Begin game');
-    return Promise.mapSeries(_.keys(this.players), playerName => {
-        console.log(`= ${playerName} is alive`);
-        this.player(playerName).setAlive()
-      })
-      .then(() => repository.refPlayers(this.id).off())
-      .then(() => this.advanceToNextPhase());
+    return Promise.mapSeries(_.keys(this.players), (playerName) => {
+      console.log(`= ${playerName} is alive`);
+      this.player(playerName).setAlive();
+    })
+    .then(() => repository.refPlayers(this.id).off())
+    .then(() => this.advanceToNextPhase());
   }
 
   player(name) {
-    return new Player({id: name, gameId: this.id});
+    return new Player({ id: name, gameId: this.id });
   }
 
   advanceToNextPhase() {
@@ -205,54 +202,54 @@ class Game {
 
   startFirstNight() {
     return this.createNewRound().then(() => this.createNewPhase())
-      .then(() => this.attachListenerForVotes('WEREWOLVES_VOTE'));
+    .then(() => this.attachListenerForVotes('WEREWOLVES_VOTE'));
   }
 
   startNight() {
     return this.currentRound().archive()
-      .then(() => this.createNewRound())
-      .then(round => round.createNewPhase(this.currentRound()))
-      .then(() => this.attachListenerForVotes('WEREWOLVES_VOTE'));
+    .then(() => this.createNewRound())
+    .then(round => round.createNewPhase(this.currentRound()))
+    .then(() => this.attachListenerForVotes('WEREWOLVES_VOTE'));
   }
 
   startDay() {
     return this.currentRound().archiveCurrentPhase()
-      .then(this.createNewPhase())
-      .then(() => this.attachListenerForVotes('VILLAGERS_VOTE'));
+    .then(this.createNewPhase())
+    .then(() => this.attachListenerForVotes('VILLAGERS_VOTE'));
   }
 
   endGame(endMessage) {
     console.log('= EndGame', endMessage);
     return this.currentRound().archive()
-      .then(() => repository.updateGameStatus(this.id, endMessage)
-        .then(() => repository.updateDeviceStatus(this.deviceId, endMessage)));
+    .then(() => repository.updateGameStatus(this.id, endMessage)
+    .then(() => repository.updateDeviceStatus(this.deviceId, endMessage)));
   }
 
   currentRound() {
     if (this.rounds && this.rounds.current) {
-      const value = this.rounds.current
-      value.gameId = this.id
+      const value = this.rounds.current;
+      value.gameId = this.id;
       return new Round(value);
     }
-    return new Round({gameId: this.id});
+    return new Round({ gameId: this.id });
   }
 
   createNewRound() {
     return repository.getGame(this.id)
-      .then((game) => {
-        const roundNumber = parseInt(game.val().roundNumber, 10) + 1;
-        console.log(`\n= Create New Round: ${roundNumber}`);
-        return repository.updateRounds(this.id, {current: {number: roundNumber}})
-          .then(() => repository.updateGame(this.id, {roundNumber, status: `ROUND_${roundNumber}`})
-            .then(() => repository.updateDevice(this.deviceId, {status: `ROUND_${roundNumber}`})))
-          .then(() => this.currentRound());
-      });
+    .then((game) => {
+      const roundNumber = parseInt(game.val().roundNumber, 10) + 1;
+      console.log(`\n= Create New Round: ${roundNumber}`);
+      return repository.updateRounds(this.id, { current: { number: roundNumber } })
+      .then(() => repository.updateGame(this.id, { roundNumber, status: `ROUND_${roundNumber}` })
+      .then(() => repository.updateDevice(this.deviceId, { status: `ROUND_${roundNumber}` })))
+      .then(() => this.currentRound());
+    });
   }
 
   // Should be a ROUND method ?
   createNewPhase() {
     const currentRound = new Round(this.currentRound());
-    return repository.updateCurrentRound(this.id, {phase: currentRound.createNextPhase()});
+    return repository.updateCurrentRound(this.id, { phase: currentRound.createNextPhase() });
   }
 
   attachListenerForVotes(voteType) {
@@ -283,32 +280,32 @@ class Game {
           repository.refCurrentVotes(this.id).off();
           const votesResults = votes.getMajority();
           console.log('= All werewolves voted', votesResults);
-          if (votesResults.length != 1) {
+          if (votesResults.length !== 1) {
             // TODO throw error : Mobile App should ensure that werewolves agree on a single name.
           }
-          //@jsmadja to review
+          // @jsmadja to review
           // TODO find role
           this.killPlayer(votesResults[0])
-            .then(() => repository.refGame(this.id).update({
-              lastEvent: {
-                death: votesResults[0],
-                role: 'villager'
-              }
-            }))
-            .then(() => repository.makeDeviceTalkToHome(this.id))
-            .then(() => repository.updateDeviceStatus(this.deviceId, "WEREWOLVES_VOTE_COMPLETED"))
-            .then(() => resolve(repository.updateGameStatus(this.id, "WEREWOLVES_VOTE_COMPLETED")))
-            .then(() => this.attachListenerForStatus());
-        } else if (voteType == 'VILLAGERS_VOTE' && votes.countVotes() == players.getAlive().length) {
+          .then(() => repository.refGame(this.id).update({
+            lastEvent: {
+              death: votesResults[0],
+              role: 'villager',
+            },
+          }))
+          .then(() => repository.makeDeviceTalkToHome(this.id))
+          .then(() => repository.updateDeviceStatus(this.deviceId, 'WEREWOLVES_VOTE_COMPLETED'))
+          .then(() => resolve(repository.updateGameStatus(this.id, 'WEREWOLVES_VOTE_COMPLETED')))
+          .then(() => this.attachListenerForStatus());
+        } else if (voteType === 'VILLAGERS_VOTE' && votes.countVotes() === players.getAlive().length) {
           repository.refCurrentVotes(this.id).off();
-          const votesResults = votes.getMajority()
+          const votesResults = votes.getMajority();
           console.log('= All villagers voted', votesResults);
-          //@jsmadja to review
+          // @jsmadja to review
           this.killPlayer(votesResults[0])
-            .then(() => repository.makeDeviceTalkToHome(this.id))
-            .then(() => repository.updateDeviceStatus(this.deviceId, "VILLAGERS_VOTE_COMPLETED"))
-            .then(() => resolve(repository.updateGameStatus(this.id, "VILLAGERS_VOTE_COMPLETED")))
-            .then(() => this.attachListenerForStatus());
+          .then(() => repository.makeDeviceTalkToHome(this.id))
+          .then(() => repository.updateDeviceStatus(this.deviceId, 'VILLAGERS_VOTE_COMPLETED'))
+          .then(() => resolve(repository.updateGameStatus(this.id, 'VILLAGERS_VOTE_COMPLETED')))
+          .then(() => this.attachListenerForStatus());
         }
       });
     };
@@ -316,22 +313,22 @@ class Game {
 
   killPlayer(playerId) {
     return repository.getCurrentSubPhase(this.id)
-      .update({death: playerId})
-      .then(() => this.currentRound().killPlayer(playerId));
+    .update({ death: playerId })
+    .then(() => this.currentRound().killPlayer(playerId));
   }
 
   getRoundEndMessage() {
     // TODO here it is probably useless to reload players
     return repository.getAlivePlayers(this.id)
-      .then((players) => {
-        if (players.getVillagers().length === 1) {
-          return 'WEREWOLVES_VICTORY';
-        }
-        if (players.getWerewolves().length === 0) {
-          return 'VILLAGERS_VICTORY';
-        }
-        return undefined;
-      });
+    .then((players) => {
+      if (players.getVillagers().length === 1) {
+        return 'WEREWOLVES_VICTORY';
+      }
+      if (players.getWerewolves().length === 0) {
+        return 'VILLAGERS_VICTORY';
+      }
+      return undefined;
+    });
   }
 }
 

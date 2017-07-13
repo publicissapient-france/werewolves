@@ -30,9 +30,9 @@ app.get('/', (req, res) => {
 
 // GCloud Health Check
 app.get('/_ah/health', (req, res) => {
-  res.status(200)
-  res.send()
-})
+  res.status(200);
+  res.send();
+});
 
 // Endpoint for home interactions
 app.post('/home', (req, res) => {

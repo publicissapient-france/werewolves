@@ -11,32 +11,32 @@ class Round {
   createNextPhase() {
     if (this.phase && this.phase.state === 'NIGHT') {
       console.log('= Create New Phase DAY');
-      return new Phase({state: 'DAY', subPhase: {state: 'VILLAGERS_VOTE'}});
+      return new Phase({ state: 'DAY', subPhase: { state: 'VILLAGERS_VOTE' } });
     }
     console.log('= Create New Phase NIGHT');
-    return new Phase({state: 'NIGHT', subPhase: {state: 'WEREWOLVES_VOTE'}});
+    return new Phase({ state: 'NIGHT', subPhase: { state: 'WEREWOLVES_VOTE' } });
   }
 
   createNewPhase() {
-    repository.updateCurrentRound(this.gameId, {phase: this.createNextPhase()})
-  };
+    repository.updateCurrentRound(this.gameId, { phase: this.createNextPhase() });
+  }
 
   killPlayer(playerId, currentRound) {
     // TODO here it is probably useless to reload rounds
     // TODO not that simple
     return repository.getCurrentRound(this.gameId)
-      .then((currentRound) => {
-        const killedBy = currentRound.val().phase.subPhase.state;
-        const killedAt = `ROUND_${currentRound.val().number}`;
-        return new Player({
-          id: playerId,
-          gameId: this.gameId,
-        }).kill(killedBy, killedAt);
-      });
+    .then((currentRound) => {
+      const killedBy = currentRound.val().phase.subPhase.state;
+      const killedAt = `ROUND_${currentRound.val().number}`;
+      return new Player({
+        id: playerId,
+        gameId: this.gameId,
+      }).kill(killedBy, killedAt);
+    });
   }
 
   archiveCurrentPhase() {
-    console.log(`= Archive phase ${this.phase.state}`)
+    console.log(`= Archive phase ${this.phase.state}`);
     const ref = repository.refCurrentRound(this.gameId);
     const currentPhase = this.phase;
     const jsonContent = {};
@@ -48,11 +48,11 @@ class Round {
   archive() {
     this[this.phase.state] = this.phase;
     this.phase = null;
-    var archivedObject = {NIGHT: this.NIGHT};
+    const archivedObject = { NIGHT: this.NIGHT };
     if (this.DAY) {
       archivedObject.DAY = this.DAY;
     }
-    firebase.database().ref(`games/${this.gameId}/rounds/${this.number}`).set(archivedObject)
+    firebase.database().ref(`games/${this.gameId}/rounds/${this.number}`).set(archivedObject);
     // BUGGED @jsmadja
     // repository.refRound(this.gameId, currentRound.val().number).set(currentRound.val())
     // TODO also remove in the object

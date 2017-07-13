@@ -13,12 +13,10 @@ const refCurrentSubPhase = gameId => firebase.database().ref(`games/${gameId}/ro
 const refRound = (gameId, number) => firebase.database().ref(`games/${this.gameId}/rounds/${number}`);
 
 // TODO here it is probably useless to reload players
-const getRandomPlayer = (gameId) =>
+const getRandomPlayer = gameId =>
   refPlayers(gameId)
-    .once('value')
-    .then(players => {
-      return players.val()[_.keys(players.val())[_.random(0, _.keys(players.val()).length - 1)]]
-    });
+  .once('value')
+  .then(players => players.val()[_.keys(players.val())[_.random(0, _.keys(players.val()).length - 1)]]);
 
 
 module.exports = {
@@ -29,24 +27,24 @@ module.exports = {
   // TODO here it is probably useless to reload players
   getAlivePlayers: gameId =>
     refPlayers(gameId)
-      .orderByChild('status')
-      .equalTo('ALIVE')
-      .once('value')
-      .then(result => new Players(result.val())),
+    .orderByChild('status')
+    .equalTo('ALIVE')
+    .once('value')
+    .then(result => new Players(result.val())),
 
-  updatePlayerCount: (gameId, nbPlayers) => refGame(gameId).update({nbPlayers}),
+  updatePlayerCount: (gameId, nbPlayers) => refGame(gameId).update({ nbPlayers }),
 
   // TODO here it is probably useless to reload players
   getAllPlayers: gameId =>
     refPlayers(gameId)
-      .once('value')
-      .then(players => _.keys(players.val())),
+    .once('value')
+    .then(players => _.keys(players.val())),
 
   refPlayers,
 
   updatePlayer: player =>
     firebase.database().ref().child(`games/${player.gameId}/players/${player.name}`)
-      .update(player),
+    .update(player),
 
   //
   // Games
@@ -54,7 +52,7 @@ module.exports = {
   getGame: gameId => refGame(gameId).once('value'),
 
   updateGameStatus: (gameId, status) =>
-    refGame(gameId).update({status}),
+    refGame(gameId).update({ status }),
 
   updateGame: (gameId, values) =>
     refGame(gameId).update(values),
@@ -68,16 +66,16 @@ module.exports = {
     refDevice(deviceId).update(values),
 
   updateDeviceStatus: (deviceId, status) =>
-    refDevice(deviceId).update({status}),
+    refDevice(deviceId).update({ status }),
 
 
-  makeDeviceTalkToHome: (gameId) =>
-    getRandomPlayer(gameId).then((player)=>
+  makeDeviceTalkToHome: gameId =>
+    getRandomPlayer(gameId).then(player =>
       refGame(gameId).update({
         speak: {
           deviceId: player.deviceId,
-          textToSpeech: "Ok Google... Talk to Werewolves"
-        }
+          textToSpeech: 'Ok Google... Talk to Werewolves',
+        },
       })),
 
   getDevice: deviceId => firebase.database().ref(`devices/${deviceId}`).once('value'),

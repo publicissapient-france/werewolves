@@ -31,7 +31,7 @@ class Players {
     if (killables.length > 0) {
       return killables[0].name;
     }
-  };
+  }
 }
 
 module.exports = Players;

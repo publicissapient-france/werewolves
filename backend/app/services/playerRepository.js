@@ -4,4 +4,4 @@ const refPlayer = (gameId, player) => firebase.database().ref(`games/${gameId}/p
 
 module.exports = {
   refPlayer,
-}
+};

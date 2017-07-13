@@ -1,7 +1,7 @@
 const repository = require('../services/playerRepository');
 
 class Player {
-  constructor(data = {name: '', deviceId: '', gameId: ''}) {
+  constructor(data = { name: '', deviceId: '', gameId: '' }) {
     Object.assign(this, data);
   }
 
@@ -30,21 +30,21 @@ class Player {
   }
 
   setAlive() {
-    return repository.refPlayer(this.gameId, this.id).update({status: 'ALIVE'});
+    return repository.refPlayer(this.gameId, this.id).update({ status: 'ALIVE' });
   }
 
   kill(killedBy, killedAt) {
     console.log(`= ${this.id} killed by ${killedBy} on ${killedAt}`);
     return repository.refPlayer(this.gameId, this.id)
-      .update({
-        status: 'DEAD',
-        killedBy,
-        killedAt,
-      });
+    .update({
+      status: 'DEAD',
+      killedBy,
+      killedAt,
+    });
   }
 
   assignRole(role) {
-    return repository.refPlayer(this.gameId, this.id).update({role});
+    return repository.refPlayer(this.gameId, this.id).update({ role });
   }
 }
 
