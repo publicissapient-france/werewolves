@@ -22,7 +22,7 @@ describe('Read', () => {
       function (done) {
         this.timeout(30000);
 
-        TTSService.read('my name is john')
+        TTSService.read('Welcome to werewolves of Hull')
           .then(() => done())
           .catch(done);
       });
