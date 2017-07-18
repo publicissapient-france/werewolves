@@ -25,8 +25,29 @@ describe('Light', () => {
           })
           .catch(done);
       });
-    it('', // eslint-disable-next-line
+    it('lights', // eslint-disable-next-line
       function (done) {
+        this.timeout(5000);
+        lightService.searchBridge()
+          .then(() => {
+            lightService.initApi();
+            lightService.findLights()
+              .then(() => done());
+          })
+          .catch(done);
+      });
+    it('turn on/off', // eslint-disable-next-line
+      function (done) {
+        this.timeout(5000);
+        lightService.searchBridge()
+          .then(() => {
+            lightService.initApi();
+            lightService.turnLightOn(1)
+              .then(() => new Promise(resolve => setTimeout(() => resolve(), 2000)))
+              .then(() => lightService.turnLightOff(1))
+              .then(() => done());
+          })
+          .catch(done);
       });
   });
 });
