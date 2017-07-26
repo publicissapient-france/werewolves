@@ -25,24 +25,21 @@ const resumeApp = (assistant) => {
   });
 };
 
-function getUserId(assistant) {
-  return assistant.body_.originalRequest.data.user.userId;
-}
-
 const createGame = (assistant) => {
   console.log('Creating game');
   // TODO to be modified
-  return new Game(getUserId(assistant)).create().then((game) => {
+  const userId = assistant.body_.originalRequest.data.user.userId;
+  return new Game(userId).create().then((game) => {
     console.log('Game id is', game.id);
     const message = MessageFactory.newCreateMessage(assistant.body_.result.fulfillment.messages, game.id);
-    game.associateUserIdToGame(getUserId(assistant));
+    game.associateUserIdToGame(assistant.body_.originalRequest.data.user.userId);
     assistant.tell(message);
   });
 };
 
-const startGame = (assistant) => {
-  // TODO check that there is more than 6 players ? Mobile ?
-  return Game.loadByDeviceId(assistant.body_.originalRequest.data.user.userId).then((game) => {
+// TODO check that there is more than 6 players ? Mobile ?
+const startGame = assistant =>
+  Game.loadByDeviceId(assistant.body_.originalRequest.data.user.userId).then((game) => {
     const gameId = game.id;
     console.log(`Display all players name for ${gameId}`);
     repository.getAllPlayers(gameId).then((players) => {
@@ -50,7 +47,6 @@ const startGame = (assistant) => {
       assistant.ask(message);
     });
   });
-};
 
 const startGameIsConfirmed = (assistant) => {
   console.log('START_GAME_CONFIRMED');

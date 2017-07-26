@@ -1,4 +1,3 @@
-// Helpers
 const addSpeechToMessage = (message, speech) => message + speech;
 const addAudioToMessage = (message, audioUrl, audioSpeech) => `${message}<audio src="${audioUrl}">${audioSpeech}</audio>`;
 const startMessage = () => '<speak>';
