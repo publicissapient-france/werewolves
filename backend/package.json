@@ -26,8 +26,9 @@
     "istanbul": "0.4.5",
     "mocha": "3.4.2",
     "npm-check": "5.4.4",
-    "proxyquire": "1.8.0",
-    "sinon": "2.3.6",
+    "proxyquire": "^1.8.0",
+    "sinon": "^2.3.6",
+    "supertest": "^3.0.0",
     "wait-until": "0.0.2"
   },
   "scripts": {

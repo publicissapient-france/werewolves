@@ -38,7 +38,7 @@ const buildWerewolvesVoteEndMessage = (killed, role) => {
   return endMessage(message);
 };
 
-const buildVillagersVoteEndMessage = (killed) => {
+const buildVillagersVoteEndMessage = (killed, role) => {
   let message = startMessage();
 
   message = addSpeechToMessage(message, 'Villagers made their choice.');
@@ -53,7 +53,7 @@ const buildVillagersVoteEndMessage = (killed) => {
 
 const resumeApp = (assistant) => {
   console.log('= Welcome action');
-  Game.loadByDeviceId(assistant.body_.originalRequest.data.user.userId).then((game) => {
+  return Game.loadByDeviceId(assistant.body_.originalRequest.data.user.userId).then((game) => {
     // Case WEREWOLVES vote completed
     if (game) {
       console.log(game.id, game.status);
@@ -93,7 +93,7 @@ function getUserId(assistant) {
 const createGame = (assistant) => {
   console.log('Creating game');
   // TODO to be modified
-  new Game(getUserId(assistant)).create().then((game) => {
+  return new Game(getUserId(assistant)).create().then((game) => {
     console.log('Game id is', game.id);
     const message = newCreateMessage(assistant, game.id);
     game.associateUserIdToGame(getUserId(assistant));
@@ -103,7 +103,7 @@ const createGame = (assistant) => {
 
 const startGame = (assistant) => {
   // TODO check that there is more than 6 players ? Mobile ?
-  Game.loadByDeviceId(assistant.body_.originalRequest.data.user.userId).then((game) => {
+  return Game.loadByDeviceId(assistant.body_.originalRequest.data.user.userId).then((game) => {
     const gameId = game.id;
     console.log(`Display all players name for ${gameId}`);
 
@@ -127,7 +127,7 @@ const startGame = (assistant) => {
 
 const startGameIsConfirmed = (assistant) => {
   console.log('START_GAME_CONFIRMED');
-  Game.loadByDeviceId(assistant.body_.originalRequest.data.user.userId).then((game) => {
+  return Game.loadByDeviceId(assistant.body_.originalRequest.data.user.userId).then((game) => {
     game.distributeRoles();
 
     let message = startMessage();
@@ -149,3 +149,5 @@ this.apiAiActionMap.set('WELCOME', resumeApp);
 this.apiAiActionMap.set('CREATE_GAME', createGame);
 this.apiAiActionMap.set('START_GAME', startGame);
 this.apiAiActionMap.set('START_GAME_CONFIRMED', startGameIsConfirmed);
+
+module.exports = this.apiAiActionMap;

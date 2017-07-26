@@ -12,18 +12,6 @@ app.use((err, req, res, next) => {
   res.status(500).send('Something broke!');
 });
 
-// For demo only
-function playAudio(assistant) {
-  console.log('Play sound');
-  const text_to_speech = '<speak>'
-    + 'I can play a sound'
-    + '<audio src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg">a digital watch alarm</audio>'
-    + 'I can pause <break time="3" />. '
-    + '<audio src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg">a digital watch alarm</audio>'
-    + '</speak>';
-  assistant.tell(text_to_speech);
-}
-
 app.get('/', (req, res) => {
   res.status(200).send('Basic page for the Werewolves game').end();
 });
@@ -48,3 +36,5 @@ const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`App Werewolves by Xebia listening on port ${PORT}`);
 });
+
+module.exports = app;
