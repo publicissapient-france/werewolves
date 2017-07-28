@@ -2,30 +2,30 @@ const Game = require('../core/game');
 const repository = require('../services/repository');
 const MessageFactory = require('./messageFactory');
 
-module.exports.apiAiActionMap = new Map();
+const apiAiActionMap = new Map();
 
-const resumeApp = (assistant) => {
+apiAiActionMap.set('WELCOME', (assistant) => {
   console.log('= Welcome action');
   return Game.loadByDeviceId(assistant.body_.originalRequest.data.user.userId).then((game) => {
-    // Case WEREWOLVES vote completed
     if (game) {
       console.log(game.id, game.status);
     }
-    if (game && game.id && game.status === 'WEREWOLVES_VOTE_COMPLETED') {
+    if (game && game.werewolvesHaveVoted()) {
       console.log(game, game.lastEvent);
-      assistant.tell(MessageFactory.buildWerewolvesVoteEndMessage(game.lastEvent.death, game.lastEvent.role));
-    } else if (game && game.id && game.status === 'VILLAGERS_VOTE_COMPLETED') {
-      assistant.tell(MessageFactory.buildVillagersVoteEndMessage(game.lastEvent.death, game.lastEvent.role));
-    } else if (game && game.id && game.status !== 'END') {
-      assistant.ask(`Resuming message : game status is ${game.status}`);
-    } else {
-      const message = MessageFactory.buildMessageFromApiAiUnchanged(assistant.body_.result.fulfillment.messages);
-      assistant.ask(message);
+      return assistant.tell(MessageFactory.buildWerewolvesVoteEndMessage(game.lastEvent.death, game.lastEvent.role));
     }
+    if (game && game.villagersHaveVoted()) {
+      return assistant.tell(MessageFactory.buildVillagersVoteEndMessage(game.lastEvent.death, game.lastEvent.role));
+    }
+    if (game && game.isNotEnded()) {
+      return assistant.ask(`Resuming message : game status is ${game.status}`);
+    }
+    const message = MessageFactory.buildMessageFromApiAiUnchanged(assistant.body_.result.fulfillment.messages);
+    return assistant.ask(message);
   });
-};
+});
 
-const createGame = (assistant) => {
+apiAiActionMap.set('CREATE_GAME', (assistant) => {
   console.log('Creating game');
   // TODO to be modified
   const userId = assistant.body_.originalRequest.data.user.userId;
@@ -35,10 +35,10 @@ const createGame = (assistant) => {
     game.associateUserIdToGame(assistant.body_.originalRequest.data.user.userId);
     assistant.tell(message);
   });
-};
+});
 
 // TODO check that there is more than 6 players ? Mobile ?
-const startGame = assistant =>
+apiAiActionMap.set('START_GAME', assistant =>
   Game.loadByDeviceId(assistant.body_.originalRequest.data.user.userId).then((game) => {
     const gameId = game.id;
     console.log(`Display all players name for ${gameId}`);
@@ -46,9 +46,10 @@ const startGame = assistant =>
       const message = MessageFactory.buildStartGameMessage(players, assistant.body_.result.fulfillment.messages);
       assistant.ask(message);
     });
-  });
+  }));
 
-const startGameIsConfirmed = (assistant) => {
+
+apiAiActionMap.set('START_GAME_CONFIRMED', (assistant) => {
   console.log('START_GAME_CONFIRMED');
   return Game.loadByDeviceId(assistant.body_.originalRequest.data.user.userId).then((game) => {
     game.distributeRoles();
@@ -56,11 +57,6 @@ const startGameIsConfirmed = (assistant) => {
     game.attachListenerForReadiness();
     assistant.tell(message);
   });
-};
+});
 
-this.apiAiActionMap.set('WELCOME', resumeApp);
-this.apiAiActionMap.set('CREATE_GAME', createGame);
-this.apiAiActionMap.set('START_GAME', startGame);
-this.apiAiActionMap.set('START_GAME_CONFIRMED', startGameIsConfirmed);
-
-module.exports = this.apiAiActionMap;
+module.exports = apiAiActionMap;

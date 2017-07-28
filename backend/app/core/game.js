@@ -330,6 +330,18 @@ class Game {
       return undefined;
     });
   }
+
+  werewolvesHaveVoted() {
+    return this.id && this.status === 'WEREWOLVES_VOTE_COMPLETED';
+  }
+
+  villagersHaveVoted() {
+    return this.id && this.status === 'VILLAGERS_VOTE_COMPLETED';
+  }
+
+  isNotEnded() {
+    return this.id && this.status !== 'END';
+  }
 }
 
 module.exports = Game;
