@@ -1,0 +1,1 @@
+<speak>{{textToSpeech1}}<audio src="https://xebia-sandbox.appspot.com/static/wolves.mp3">wolves</audio>{{textToSpeech2}}</speak>

@@ -86,7 +86,7 @@ describe('apiAi [WELCOME]', () => {
     return apiAiActionMap.get('WELCOME')(assistant)
     .then(() =>
       assert(assistant.tell.calledWith(
-        '<speak>Villagers made their choice.<break time="3" />bob end up on the gallows.<break time="1" />He was a <break time="1" /> ${role}.<break time="2" />Night is falling. Everybody, please close your eyes</speak>')));
+        '<speak>Villagers made their choice.<break time="3" />bob end up on the gallows.<break time="1" />He was a <break time="1" /> WEREWOLF.<break time="2" />Night is falling. Everybody, please close your eyes</speak>')));
   });
 
   it('should end game', () => {
