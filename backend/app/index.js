@@ -28,7 +28,7 @@ app.post('/home', (req, res) => {
   const assistant = new ApiAiApp({ request: req, response: res });
 
   console.log('Handling request');
-  assistant.handleRequest(apiAiSetup.apiAiActionMap);
+  assistant.handleRequest(apiAiSetup);
 });
 
 // Start the server
